@@ -10,9 +10,10 @@ There are also "**tags**", which are basically arrays of values on a property of
 
 Anyways, that's the basic idea of the code.  Once it's closer to done I plan on writing proper documentation for it, doing function testing, making some sample code, and then posting it here.
 
-Current progress (as of 4/18/'18):
- - ~77% done on coding (122 out of 158 currently proposed functions).
- - Very little sample code, testing, or documentation complete.
+Current progress (as of 4/24/'18):
+ - ~86% done on coding (147 out of 171 currently proposed functions).
+ - Very little sample code or testing complete.
+ - Documentation skeleton written.  Additional detals, examples, and search function to be added later
 
 I'm currently looking for pre-release testers, especially those willing to create mock-ups and text showing how they want the inventory system to work in their Twine projects.  If you're interested, email me at: **HiEv (5\*9-2) at Yahoo dot com** .
 

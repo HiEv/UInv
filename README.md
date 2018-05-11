@@ -16,6 +16,7 @@ Current progress (as of 5/10/'18):
  - Documentation skeleton written.  Additional detals, examples, and search function to be added later
 
 You can take a look at an early version of the help file at the link below:
+
 http://bit.ly/UInvHelp  (work in progress)
 
 I'm currently looking for pre-release testers, especially those willing to create mock-ups and text showing how they want the inventory system to work in their Twine projects.  If you're interested, email me at: **HiEv (5\*9-2) at Yahoo dot com** .

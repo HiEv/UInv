@@ -10,10 +10,10 @@ There are also "**tags**", which are basically arrays of values on a property of
 
 Anyways, that's the basic idea of the code.  Once it's closer to done I plan on writing proper documentation for it, doing function testing, making some sample code, and then posting it here.
 
-Current progress (as of 7/1/'18):
+Current progress (as of July 8, '18):
  - ~94% done on coding (197 out of 209 currently proposed functions).
  - Very little sample code or testing done yet.
- - Documentation skeleton written.  Additional detals, examples, and search function to be added later
+ - Documentation skeleton written.  Additional details and examples to be added later
 
 You can take a look at an early version of the help file at the link below:
 

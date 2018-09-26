@@ -1,0 +1,67 @@
+
+coin.png, backpack.png, potionRed.png, potionGreen.png, potionBlue.png:
+-----------------------------------------------------------------------
+
+by Ravenmore (Krzysztof Dycha)
+
+https://opengameart.org/content/fantasy-icon-pack-by-ravenmore-0
+
+Attribution Instructions: 
+If you manage to sell/publish your game just drop my nick and a link to my portfolio (http://dycha.net) in your games' credit section :) Thanks!
+
+
+
+potionOrange.png, potionYellow.png, potionPurple.png:
+-----------------------------------------------------
+
+from icons2.png
+
+by VWolfdog
+
+https://opengameart.org/content/32x32-icons-flare-compatible
+
+
+
+icon_*.png images:
+------------------
+
+by Scrittl
+
+https://opengameart.org/content/armor-icons-32x32-px-painterly
+https://opengameart.org/content/weapon-icons-32x32px-painterly
+
+
+
+Wood textures:
+--------------
+
+by PatternParrot.com (defunct)
+
+woodtexture5.jpg
+woodtexture7.jpg
+
+
+
+Heavy_Mace.png:
+---------------
+
+Flare Weapon Icons 2
+
+Models by Clint Bellanger
+Paint finish by Justin Nichol
+
+Released CC0.
+
+
+
+ui-icons_*.png images:
+----------------------
+
+jQuery icons
+
+
+
+*.gif and *.svg images:
+-----------------------
+
+by HiEv

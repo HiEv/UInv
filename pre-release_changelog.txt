@@ -1,0 +1,85 @@
+Universal Inventory System (UInv) changelog
+by HiEv                v0.9.6 (pre-release)
+
+A JavaScript inventory "plugin" for Twine 2 / SugarCube 2.
+
+Future home: https://github.com/HiEv/UInv
+
+v0.5.7 - March 29, 2018 - (preview release 1)
+  - 62 functions written out of 108 planned functions
+v0.6.9 - April  6, 2018 - (preview release 2)
+  - 28 new functions written + 23 new functions planned
+  - some functions renamed to conform to consistent naming style
+v0.7.7 - April 18, 2018 - (preview release 3)
+  - 32 new functions written + 27 new functions planned
+  - some functions renamed to conform to consistent naming style
+  - most previously incomplete functions are now complete
+  - lots of debugging and additional error checking done
+v0.8.6 - April 24, 2018 - (preview release 4)
+  - 25 new functions written + 13 new functions planned
+  - some functions renamed to conform to consistent naming style
+  - work on help file started (very preliminary)
+v0.9.1 - May 10, 2018 - (preview release 5)
+  - 18 new functions written + 11 new functions planned
+  - added default bags
+  - major rework of engine to allow deletion of default properties
+  - some bugs fixed
+v0.9.2 - May 23, 2018 - (preview release 6)
+  - 10 new functions written + 8 new functions planned
+  - renamed BagCount to GetBagCount for more consistent naming style
+  - moved data sections to bottom to make updating UInv easier
+  - some bugs fixed
+  - Item Builder added to UInv help file
+v0.9.4 - July 8, 2018 - (preview release 7)
+  - 22 new functions written + 19 new functions planned
+  - some functions renamed to conform to consistent naming style
+  - centralized more functions for display utilities
+  - saved a bit more memory/history size
+  - handled a potential problem with non-static default properties
+  - improved compatibility with other browsers
+  - moved utility functions inside UInv namespace
+v0.9.5 - July 23, 2018 - (preview release 8)
+  - 12 new functions written + 12 new functions planned
+  - revamped error handling to add thrown errors
+  - added utility functions for engine detection
+  - saved a bit more memory/history size
+  - major restructuring of item data 
+  - added handling of variable items and variable bags
+v0.9.6 - September 25, 2018 - (preview release 9)
+  - 31 new functions written + 27 new functions planned
+  - major bugfix in SwapItems and many "Tag" functions
+  - all utility function names now start lowercase
+  - added the ability to cache images for online usage
+  - the UInv Safe Save Code has been updated (see help)
+  - added option for sending UInv errors to console
+  - typing "xyzzy" now toggles console (F12) error log
+  - began implementation of display elements
+    * table
+    * radialMenu
+  - began implementation of event handlers
+    "general" events:
+      * MouseDown
+      * MouseUp
+    "bag" events:
+      * Touched
+    "table" events:
+      * Accept
+      * DragStart
+      * Drop
+      * DragStop
+    "radialMenu" events:
+      * Open
+      * WedgeClick
+      * DisabledWedgeClick
+      * Cancel
+    "cacheImages" events:
+      * Loaded
+      * Error
+  - added Font Awesome support: https://fontawesome.com/free
+    just add the following line to your stylesheet section:
+    @import url('https://use.fontawesome.com/releases/v5.3.1/css/all.css');
+    see the "FA_Icons.html" sample for the list of icons
+  - jQuery UI is now required to support display elements
+    https://api.jqueryui.com/category/all/
+    just include and load the jquery-ui.css and jquery-ui.js
+    files, along with the "images/ui-*.png" images

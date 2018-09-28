@@ -94,6 +94,8 @@ this point and will likely not change much, other than adding "pockets". However
 compatibility with this version's display code will almost certainly be broken in
 future updates (though hopefully not too badly broken).
 
+In short, all of the code is currently "use at your own risk."
+
 Currently known display bugs:
 - Radial menu in wrong location in IE 11.
 - Table displayed slightly wrong in iPhone and iPad devices.

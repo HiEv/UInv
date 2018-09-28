@@ -83,3 +83,16 @@ v0.9.6 - September 25, 2018 - (preview release 9)
     https://api.jqueryui.com/category/all/
     just include and load the jquery-ui.css and jquery-ui.js
     files, along with the "images/ui-*.png" images
+
+
+Please keep in mind that THIS IS PRE-RELEASE CODE. This means that A) some parts have had little or no testing, B) there are some known bugs (see below), C) the documentation and sample code are severely lacking in many places, and also D) some parts are still subject to change, which means future versions may not be backwards-compatible with this version. The base code is fairly stable at this point and will likely not change much, other than adding "pockets". However, compatibility with this version's display code will almost certainly be broken in future updates (though hopefully not too badly broken).
+
+Currently known display bugs:
+- Radial menu in wrong location in IE 11.
+- Table displayed slightly wrong in iPhone and iPad devices.
+- On Android/Chrome the table is displayed behind UI bar and items can't be dragged.
+- Laptops with touchscreen won't drag items in Firefox (but it works in Edge).
+
+Also, there are some "file not found" type errors if you look in the console logs. Those errors are not actually an issue, the code just checks for the files in two locations, and when it doesn't find one it triggers an error, but it should still find the other copy of the file. (Though, you'll want to change "C:/Games/Universal Inventory System/" in the JavaScript and stylesheet sections to your local UInv directory path if you want it to display properly inside Twine.) I plan on looking into a way to prevent that later on.
+
+That said, if you spot any other bugs, have any suggestions or requests, or just have questions, please let me know.

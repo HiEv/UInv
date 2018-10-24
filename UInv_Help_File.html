@@ -103,7 +103,8 @@ var saveAs=saveAs||navigator.msSaveBlob&&navigator.msSaveBlob.bind(navigator)||f
 		<div id="init-loading"><div>Loading&hellip;</div></div>
 	</div>
 	<div id="store-area" hidden><tw-storydata name="UInv: Help File" startnode="1" creator="Twine" creator-version="2.2.1" ifid="C8B7D593-36ED-4592-90D5-253B8CD9C572" zoom="0.6" format="SugarCube" format-version="2.27.0" options="" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">@import url('https://use.fontawesome.com/releases/v5.3.1/css/all.css');
-@import url('C:/Games/Universal Inventory System/css/all.css');
+@import url('C:/Games/Universal Inventory System/all.css');
+@import url('all.css');
 
 html {
 	font: 16px/1 'Meiryo', 'Segoe UI', 'Tahoma', 'Arimo', sans-serif; 
@@ -510,7 +511,11 @@ setup.SoundPath = setup.Path + "sound/";
 setup.ImagePath = setup.Path + "images/";
 
 setup.JSLoaded = false;
-importStyles(setup.Path + "jquery-ui.css");
+if (document.location.href.indexOf("qjzhvmqlzvoo5lqnrvuhmg-on.drv.tw") !== -1) {  // Workaround for DriveToWeb bug
+	importStyles(setup.Path + "jquery-ui-fix.css");
+} else {
+	importStyles(setup.Path + "jquery-ui.css");
+}
 importScripts(setup.Path + "jquery-ui.js")
 	.then(function() {
 		setup.JSLoaded = true;
@@ -574,36 +579,27 @@ $(document).one(':passageend', function (ev) {  // eslint-disable-line
 });
 
 Config.saves.onSave = function (save) {
-	// Makes sure that the current state is saved.
-	save.state.history[save.state.index].variables.UInvBags = State.variables.UInvBags;
-	if (UInv.isProperty(State.variables, "UInvCurrentBagName")) {
-		save.state.history[save.state.index].variables.UInvCurrentBagName = State.variables.UInvCurrentBagName;
-	} else if (UInv.isProperty(save.state.history[save.state.index].variables, "UInvCurrentBagName")) {
-		delete save.state.history[save.state.index].variables.UInvCurrentBagName;
+
+	function UpdateVar(VarName) {
+		if (UInv.isProperty(State.variables, VarName)) {
+			save.state.history[save.state.index].variables[VarName] = State.variables[VarName];
+		} else if (UInv.isProperty(save.state.history[save.state.index].variables, VarName)) {
+			delete save.state.history[save.state.index].variables[VarName];
+		}
 	}
-	if (UInv.isProperty(State.variables, "UInvCurrentItemName")) {
-		save.state.history[save.state.index].variables.UInvCurrentItemName = State.variables.UInvCurrentItemName;
-	} else if (UInv.isProperty(save.state.history[save.state.index].variables, "UInvCurrentItemName")) {
-		delete save.state.history[save.state.index].variables.UInvCurrentItemName;
+
+	if (!tags().includes("NoSafeSave")) {
+		// Makes sure that the current state is saved as long as the passage doesn't have a "NoSafeSave" tag.
+		UpdateVar("UInvBags");
+		UpdateVar("UInvCurrentBagName");
+		UpdateVar("UInvCurrentItemName");
+		UpdateVar("UInvShowAlerts");
+		UpdateVar("UInvLastErrorMessage");
+		UpdateVar("UInvErrorStringAddendum");
+		UpdateVar("UInvMergeItemMethod");
+		UpdateVar("UInvUpdatesAreLocked");
+		UpdateVar("UInvEventHandlers");
 	}
-	if (UInv.isProperty(State.variables, "UInvShowAlerts")) {
-		save.state.history[save.state.index].variables.UInvShowAlerts = State.variables.UInvShowAlerts;
-	} else if (UInv.isProperty(save.state.history[save.state.index].variables, "UInvShowAlerts")) {
-		delete save.state.history[save.state.index].variables.UInvShowAlerts;
-	}
-	save.state.history[save.state.index].variables.UInvLastErrorMessage = State.variables.UInvLastErrorMessage;
-	if (UInv.isProperty(State.variables, "UInvErrorStringAddendum")) {
-		save.state.history[save.state.index].variables.UInvErrorStringAddendum = State.variables.UInvErrorStringAddendum;
-	} else if (UInv.isProperty(save.state.history[save.state.index].variables, "UInvErrorStringAddendum")) {
-		delete save.state.history[save.state.index].variables.UInvErrorStringAddendum;
-	}
-	save.state.history[save.state.index].variables.UInvMergeItemMethod = State.variables.UInvMergeItemMethod;
-	if (UInv.isProperty(State.variables, "UInvUpdatesAreLocked")) {
-		save.state.history[save.state.index].variables.UInvUpdatesAreLocked = State.variables.UInvUpdatesAreLocked;
-	} else if (UInv.isProperty(save.state.history[save.state.index].variables, "UInvUpdatesAreLocked")) {
-		delete save.state.history[save.state.index].variables.UInvUpdatesAreLocked;
-	}
-	save.state.history[save.state.index].variables.UInvEventHandlers = State.variables.UInvEventHandlers;
 };
 
 window.PassageList = (function() {
@@ -2279,7 +2275,7 @@ $(document).on('click', '#modalImage', setup.closeModal);
 
 /*
 	Universal Inventory System (UInv)
-	by HiEv                    v0.9.6
+	by HiEv                    v0.9.6.x?
 
 	A JavaScript inventory "plugin" for Twine 2 / SugarCube 2.
 
@@ -2363,6 +2359,8 @@ $(document).on('click', '#modalImage', setup.closeModal);
 		  https://api.jqueryui.com/category/all/
 		  just include and load the jquery-ui.css and jquery-ui.js
 		  files, along with the "images/ui-*.png" images
+	v0.9.6.x - ???, 2018 - (preview release 9 + bugfix x)
+		- 
 */
 
 /*
@@ -11228,7 +11226,7 @@ window.UInv = {
 
 	// Version: Return a string showing the version of UInv.
 	Version : function () {
-		return "Universal Inventory System (<a href='https://github.com/HiEv/UInv'>UInv</a>) v0.9.6 by HiEv";  // Success
+		return "Universal Inventory System (<a href='https://github.com/HiEv/UInv'>UInv</a>) v0.9.6.x? by HiEv";  // Success
 	},
 
 
@@ -11813,8 +11811,9 @@ This is the help file for the Universal Inventory System (or &quot;UInv&quot; fo
 	&lt;li&gt;[[SetMergeItemMethod]]&lt;/li&gt;
 	&lt;li&gt;[[Version]]&lt;/li&gt;
   &lt;/ul&gt;&lt;/div&gt;
-  &lt;h3&gt;[[UInv Utility Functions]]: (49 functions)&lt;/h3&gt;
+  &lt;h3&gt;[[UInv Utility Functions]]: (50 functions)&lt;/h3&gt;
   &lt;div&gt;&lt;ul&gt;
+	&lt;li&gt;[[arrayObjectIncludes]]&lt;/li&gt;
 	&lt;li&gt;[[arraysAreEqual]]&lt;/li&gt;
 	&lt;li&gt;[[arrayHasAllTags]]&lt;/li&gt;
 	&lt;li&gt;[[arrayHasAnyTag]]&lt;/li&gt;
@@ -11862,6 +11861,9 @@ Add an amount to a property&#39;s value (returns true), create that property if 
 Returns the number of bags.</tw-passagedata><tw-passagedata pid="4" name="BagExists" tags="" position="375,525" size="100,100">&#39;&#39;BagExists(BagName/Array)&#39;&#39; = t/f
 
 Returns true if bag exists/all bags in array exist, otherwise returns false.
+
+Unlike [[ItemExists]], this function does NOT check [[GetDefaultBagObject]] to see if a default bag by that name exists.
+
 </tw-passagedata><tw-passagedata pid="5" name="BagHasProperty" tags="" position="375,650" size="100,100">&#39;&#39;BagHasProperty(BagName, BagPropertyName/Array)&#39;&#39; = t/f
 
 Returns true if bag&#39;s property exists, otherwise returns false.</tw-passagedata><tw-passagedata pid="6" name="BagPropertyCount" tags="" position="375,900" size="100,100">&#39;&#39;BagPropertyCount(BagName)&#39;&#39; = number of BagName&#39;s properties, or NULL if there was an error.
@@ -11934,7 +11936,9 @@ Copies a bag property from one bag to another, overwriting the destination if th
 
 Creates a bag named BagName if that bag doesn&#39;t exist already.  Returns true if it succeeded.  Sets UInvTouched on that bag to false (see [[WasTouched]] for details).
 
-See also: [[AddBag]] and [[CopyBag]]
+This function is used to create generic bags which do not have a defined type.  If you want to create a bag which has predefined properties and/or items, use the [[AddBag]] function instead.
+
+See also: [[CopyBag]]
 </tw-passagedata><tw-passagedata pid="12" name="DeleteBag" tags="" position="500,275" size="100,100">&#39;&#39;DeleteBag(BagName)&#39;&#39;
 
 Deletes bag entirely.  Return true if successful.
@@ -11944,7 +11948,7 @@ Deletes bag property BagPropertyName.  Returns true if successful, otherwise fal
 
 If the property to be deleted is a default property, then the bag&#39;s default type will change to &quot;-&quot;, unless &quot;UInvVariableType&quot; is also one of its properties.  (You can use [[SetBagPropertyValue]] if you want to add a &quot;UInvVariableType&quot; property to the bag.)
 
-&#39;&#39;NOTE:&#39;&#39; Deleting the &quot;UInvVariableType&quot; property may lead to bag properties having variable values each time you check them if you have defined them to have variable values in the BagData function.  It is recommended that you &#39;&#39;DO NOT&#39;&#39; delete this property if it exists.  See [[GetDefaultBagObject]] for details.
+&#39;&#39;NOTE:&#39;&#39; Deleting the &quot;UInvVariableType&quot; property may lead to bag properties having variable values each time you check them if you have defined them to have variable values in the [[BagData]] function.  It is recommended that you &#39;&#39;DO NOT&#39;&#39; delete this property if it exists.  See [[GetDefaultBagObject]] for details.
 
 </tw-passagedata><tw-passagedata pid="14" name="EmptyBag" tags="" position="500,525" size="100,100">&#39;&#39;EmptyBag(BagName)&#39;&#39;
 
@@ -12114,7 +12118,7 @@ Adds item to bag.  Returns the new item&#39;s name if it succeeds, or {{{false}}
 
 If {{{NewItemName}}} is &#39;&#39;not&#39;&#39; set, then {{{ItemType}}} will also be the item&#39;s name.  If {{{NewItemName}}} &#39;&#39;is&#39;&#39; set, then the item gets {{{NewItemName}}} as its name, but it uses the default item type of {{{ItemType}}}.
 
-The name of the new item cannot be &quot;UInvTouched&quot;, &quot;UInvProperties&quot;, &quot;UInvDefaultBagType&quot;, &quot;-&quot; (the minus sign), or &quot;&quot; (an empty string).  If you plan on refering to item property names using dot notation (i.e. {{{$variable.property}}}), then the names should only be made up of A - Z, a - z, _, and $, and also cannot start with a number.
+The name of the new item cannot be &quot;UInvTouched&quot;, &quot;UInvProperties&quot;, &quot;UInvDefaultBagType&quot;, &quot;UInvContainerItem&quot;, &quot;-&quot; (the minus sign), or &quot;&quot; (an empty string).  If you plan on refering to item property names using dot notation (i.e. {{{$variable.property}}}), then the names should only be made up of A - Z, a - z, _, and $, and also cannot start with a number.
 
 The UInvMergeItemMethod setting determines what happens on item collision.  See [[SetMergeItemMethod]] for details.
 
@@ -12145,7 +12149,7 @@ Copy item from source to destination, changing the UInvQuantity if that paramete
 
 If {{{NewItemName}}} is &#39;&#39;not&#39;&#39; set, then {{{ItemName}}} will also be the item&#39;s name.  If {{{NewItemName}}} &#39;&#39;is&#39;&#39; set, then the item gets {{{NewItemName}}} as its name, but otherwise it will be identical to the default {{{ItemName}}} object.
 
-The name of the new item cannot be &quot;UInvTouched&quot;, &quot;UInvProperties&quot;, &quot;UInvDefaultBagType&quot;, &quot;-&quot; (the minus sign), or &quot;&quot; (an empty string).  If you plan on refering to item property names using dot notation (i.e. {{{$variable.property}}}), then the names should only be made up of A - Z, a - z, _, and $, and also cannot start with a number.
+The name of the new item cannot be &quot;UInvTouched&quot;, &quot;UInvProperties&quot;, &quot;UInvDefaultBagType&quot;, &quot;UInvContainerItem&quot;, &quot;-&quot; (the minus sign), or &quot;&quot; (an empty string).  If you plan on refering to item property names using dot notation (i.e. {{{$variable.property}}}), then the names should only be made up of A - Z, a - z, _, and $, and also cannot start with a number.
 
 The UInvMergeItemMethod setting determines what happens on item collision.  See [[SetMergeItemMethod]] for details.
 
@@ -12175,7 +12179,7 @@ DeleteItemProperty cannot delete UInvQuantity or UInvDefaultItemType.
 
 Returns true if successful, otherwise false.
 
-&#39;&#39;NOTE:&#39;&#39; Deleting the &quot;UInvVariableType&quot; property may lead to item properties having variable values each time you check them if you have defined them to have variable values in the ItemData function.  It is recommended that you &#39;&#39;DO NOT&#39;&#39; delete this property if it exists.  See [[GetDefaultItemObject]] for details.
+&#39;&#39;NOTE:&#39;&#39; Deleting the &quot;UInvVariableType&quot; property may lead to item properties having variable values each time you check them if you have defined them to have variable values in the [[ItemData]] function.  It is recommended that you &#39;&#39;DO NOT&#39;&#39; delete this property if it exists.  See [[GetDefaultItemObject]] for details.
 
 </tw-passagedata><tw-passagedata pid="49" name="GetAllPropertyValues" tags="" position="1175,525" size="100,100">&#39;&#39;GetAllPropertyValues(BagName, ItemPropertyName)&#39;&#39; = [ array of all unique values that property has ]
 
@@ -12185,13 +12189,13 @@ Returns the item object which matches &#39;&#39;DefaultItemType&#39;&#39;, &quot
 
 Normally you won&#39;t call this function yourself, but UInv uses it in [[AddItem]] and [[AddItems]] to add that item to a bag, and in other functions to check the default properties of the items you added.
 
-You set the default item properties in UInv&#39;s &#39;&#39;ItemData&#39;&#39; function, near the bottom of the UInv code.
+You set the default item properties in UInv&#39;s [[ItemData]] function, near the bottom of the UInv code.
 
 &#39;&#39;__IMPORTANT!:__&#39;&#39;
 * Items with consistent default property values are &quot;static items&quot;.
 * Items with property values that may vary are &quot;variable items&quot;.
 * Item names must be unique strings in all lowercase.
-* Item names cannot be &quot;uinvtouched&quot;, &quot;uinvproperties&quot;, &quot;uinvdefaultbagtype&quot;, &quot;-&quot; (the minus sign), or &quot;&quot; (an empty string), they&#39;re reserved for use by UInv.
+* Item names cannot be &quot;uinvtouched&quot;, &quot;uinvproperties&quot;, &quot;uinvdefaultbagtype&quot;, &quot;uinvcontaineritem&quot;, &quot;-&quot; (the minus sign), or &quot;&quot; (an empty string), they&#39;re reserved for use by UInv.
 * Property names can be upper and/or lowercase strings.
 * Property names with spaces in them must be inside quotes.
 * Property names are case sensitive, so a property named &quot;XYZ&quot; is different from properties named &quot;Xyz&quot; or &quot;xyz&quot;.
@@ -12395,7 +12399,7 @@ Generates and returns an unused item name (&quot;itemXXHEXX&quot;).
 
 </tw-passagedata><tw-passagedata pid="84" name="ItemExists" tags="" position="1675,1150" size="100,100">&#39;&#39;ItemExists(ItemName)&#39;&#39; = t/f, checks GetDefaultItemObject function and all bags for ItemName
 
-Returns true if ItemName is in GetDefaultItem or any bags, otherwise returns false, or NULL on error.
+This function returns {{{true}}} if ItemName is included in [[ItemData]] or any bags, otherwise returns false, or NULL on error.
 
 </tw-passagedata><tw-passagedata pid="85" name="ItemHasProperty" tags="" position="1675,1275" size="100,100">&#39;&#39;ItemHasProperty(BagName, ItemName, ItemPropertyName)&#39;&#39; = t/f
 
@@ -12422,7 +12426,7 @@ The UInvMergeItemMethod setting determines what happens on item collision.  See 
 
 Renames an item.  Optional Quantity parameter if you want to rename partial stacks, defaults to all items.  Returns the new item&#39;s name if it succeeds, or {{{false}}} if there is an error.
 
-The name of the new item cannot be &quot;UInvTouched&quot;, &quot;UInvProperties&quot;, &quot;UInvDefaultBagType&quot;, &quot;-&quot; (the minus sign), or &quot;&quot; (an empty string).  If you plan on refering to item property names using dot notation (i.e. {{{$variable.property}}}), then the names should only be made up of A - Z, a - z, _, and $, and also cannot start with a number.
+The name of the new item cannot be &quot;UInvTouched&quot;, &quot;UInvProperties&quot;, &quot;UInvDefaultBagType&quot;, &quot;UInvContainerItem&quot;, &quot;-&quot; (the minus sign), or &quot;&quot; (an empty string).  If you plan on refering to item property names using dot notation (i.e. {{{$variable.property}}}), then the names should only be made up of A - Z, a - z, _, and $, and also cannot start with a number.
 
 The UInvMergeItemMethod setting determines what happens on item collision.  See [[SetMergeItemMethod]] for details.
 
@@ -12492,7 +12496,7 @@ So, for example, you could have one &quot;&#39;&#39;bag&#39;&#39;&quot; which re
 
 For more information see the [[Bag Functions]].
 
-Anything with a collection of properties that will be attached to something else in some way can be an &quot;&#39;&#39;item&#39;&#39;&quot;, and you define items in UInv&#39;s &#39;&#39;ItemData&#39;&#39; function, at the bottom of the UInv code. Some example items might look like this:
+Anything with a collection of properties that will be attached to something else in some way can be an &quot;&#39;&#39;item&#39;&#39;&quot;, and you define items in UInv&#39;s [[ItemData]] function, at the bottom of the UInv code. Some example items might look like this:
 {{{
 case &quot;pants&quot;:
 	Item = { type : [&quot;clothing&quot;],
@@ -12521,7 +12525,7 @@ For more information see the [[GetDefaultItemObject]] function and the other [[I
 
 Use the [[Item Builder]] if you need help building your list of items.
 
-Similarly, bags can also be set up with default properties and items in UInv&#39;s &#39;&#39;BagData&#39;&#39; function, at the bottom of the UInv code.  For more details see the [[GetDefaultBagObject]] function and the [[Bag Builder]].
+Similarly, bags can also be set up with default properties and items in UInv&#39;s [[BagData]] function, at the bottom of the UInv code.  For more details see the [[GetDefaultBagObject]] function and the [[Bag Builder]].
 
 Bags and items have their own properties, and if the value of a property is an array, such as the &quot;type&quot; property in the examples above, then the values in the array are called &quot;&#39;&#39;tags&#39;&#39;&quot;.  This allows you to, for example, get a list of all items in a bag with the &quot;Type&quot; property that have a &quot;weapon&quot; tag.
 
@@ -12550,7 +12554,7 @@ Next, open your story in Twine, go down to the bottom left corner, click the upw
 
 Now paste (CTRL+V) the text you copied into the bottom of that passage, below any functions you may already have there.
 
-Next, go to the &#39;&#39;ItemData&#39;&#39; function, near the bottom of the code, and add any items there that you will use in your story.  Use the [[Item Builder]] if you need help with this.  If you need default bags, you may also edit the bags in the &#39;&#39;BagData&#39;&#39; function, located just above &#39;&#39;ItemData&#39;&#39;.  Use the [[Bag Builder]] if you need help with this.  (You can delete the example items and bags if you want.)
+Next, go to the [[ItemData]] function, near the bottom of the code, and add any items there that you will use in your story.  Use the [[Item Builder]] if you need help with this.  If you need default bags, you may also edit the bags in the [[BagData]] function, located just above [[ItemData]].  Use the [[Bag Builder]] if you need help with this.  (You can delete the example items and bags if you want.)
 
 Optionally, you can add the names of your default bags to the &#39;&#39;BagList&#39;&#39; array and/or the names of your default items to the &#39;&#39;ItemList&#39;&#39; array, both of which are near the very bottom of the UInv code.  (You can delete the examples in those arrays if you want.)
 
@@ -12558,7 +12562,7 @@ UInv normally tries to silently handle errors, returning a value that indicates 
 
 That&#39;s it!  You&#39;re now ready to use UInv in your Twine story!
 
-Next I&#39;d recommend opening up the &quot;&lt;a target=&quot;_blank&quot; @href=&quot;setup.Path+&#39;Universal_Inventory_System.html&#39;&quot;&gt;Universal_Inventory_System.html&lt;/a&gt;&quot; file in Twine and taking a look at the exsample code in there so you can see how you could use UInv in //your// Twine project.
+Next I&#39;d recommend opening up the &quot;&lt;a target=&quot;_blank&quot; @href=&quot;setup.Path+&#39;Universal_Inventory_System.html&#39;&quot;&gt;Universal_Inventory_System.html&lt;/a&gt;&quot; file in Twine and taking a look at the example code in there so you can see how you could use UInv in //your// Twine project.
 </tw-passagedata><tw-passagedata pid="99" name="Tag Functions" tags="Excluded" position="2300,25" size="200,100">&lt;center&gt;&lt;h2&gt;Tag Functions&lt;/h2&gt;&lt;/center&gt;
 - [[AddBagTag]](BagName/Array, BagPropertyName, BagTag/Array)
 - [[AddItemTag]](BagName/Array, ItemName, ItemPropertyName, ItemTag/Array)
@@ -12803,6 +12807,7 @@ Your backpack contains a dagger, two pairs of pants, and 20 gold coins.
 - [[SetUserAlerts]](ErrorSetting, [ErrorStringAddendum])
 - [[SetMergeItemMethod]](MergeMethod)
 - [[Version]]()</tw-passagedata><tw-passagedata pid="138" name="UInv Utility Functions" tags="Excluded" position="3375,25" size="200,100">&lt;center&gt;&lt;h2&gt;Non-UInv General Functions&lt;/h2&gt;&lt;/center&gt;
+- [[arrayObjectIncludes]](ArrayOfGenericObjects, ObjProperty, Value)
 - [[arraysAreEqual]](Array1, Array2)
 - [[arrayHasAllTags]](Array, TagArray)
 - [[arrayHasAnyTag]](Array, TagArray)
@@ -12900,65 +12905,65 @@ See also: [[SetUserAlerts]]
 Returns a string showing the version of UInv.
 
 That output currently is: &lt;&lt;=UInv.Version()&gt;&gt;
-</tw-passagedata><tw-passagedata pid="144" name="arraysAreEqual" tags="" position="3250,150" size="100,100">&#39;&#39;arraysAreEqual(Array1, Array2)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="144" name="arraysAreEqual" tags="" position="3250,275" size="100,100">&#39;&#39;arraysAreEqual(Array1, Array2)&#39;&#39; = t/f
 
 Check two arrays to see if they&#39;re identical.
-</tw-passagedata><tw-passagedata pid="145" name="arrayHasAllTags" tags="" position="3250,275" size="100,100">&#39;&#39;arrayHasAllTags(Array, TagArray)&#39;&#39; = t/f  (if a tag in TagArray is repeated, Array must have that many or more of that tag in it to count)
+</tw-passagedata><tw-passagedata pid="145" name="arrayHasAllTags" tags="" position="3250,400" size="100,100">&#39;&#39;arrayHasAllTags(Array, TagArray)&#39;&#39; = t/f  (if a tag in TagArray is repeated, Array must have that many or more of that tag in it to count)
 
 Returns true if Array1 has an equal or greater number of all tags in TagArray, or NULL if there is an error.
 
-</tw-passagedata><tw-passagedata pid="146" name="arrayHasAnyTag" tags="" position="3250,400" size="100,100">&#39;&#39;arrayHasAnyTag(Array, TagArray)&#39;&#39; = t/f  (if a tag in TagArray is repeated, Array must have that many or more of that tag in it to count)
+</tw-passagedata><tw-passagedata pid="146" name="arrayHasAnyTag" tags="" position="3250,525" size="100,100">&#39;&#39;arrayHasAnyTag(Array, TagArray)&#39;&#39; = t/f  (if a tag in TagArray is repeated, Array must have that many or more of that tag in it to count)
 
 Returns true if Array1 has at least one of the tags in TagArray, or NULL if there is an error.
 
-</tw-passagedata><tw-passagedata pid="147" name="arrayHasTag" tags="" position="3250,525" size="100,100">&#39;&#39;arrayHasTag(Array, Tag)&#39;&#39; = number of Tag tags found in array, or NULL on error
+</tw-passagedata><tw-passagedata pid="147" name="arrayHasTag" tags="" position="3250,650" size="100,100">&#39;&#39;arrayHasTag(Array, Tag)&#39;&#39; = number of Tag tags found in array, or NULL on error
 
 Returns the number of tags found in array, or NULL if there is an error.
 
-</tw-passagedata><tw-passagedata pid="148" name="getArraySortedByOtherArray" tags="" position="3375,275" size="100,100">&#39;&#39;getArraySortedByOtherArray(UnsortedArray, ArrayToSortBy, [RemoveDuplicates = false])&#39;&#39; = UnsortedArray sorted based on ArrayToSortBy and subsorted by UnsortedArray value, if RemoveDuplicates is true, remove any with the same values across both arrays
+</tw-passagedata><tw-passagedata pid="148" name="getArraySortedByOtherArray" tags="" position="3375,400" size="100,100">&#39;&#39;getArraySortedByOtherArray(UnsortedArray, ArrayToSortBy, [RemoveDuplicates = false])&#39;&#39; = UnsortedArray sorted based on ArrayToSortBy and subsorted by UnsortedArray value, if RemoveDuplicates is true, remove any with the same values across both arrays
 
 Returns UnsortedArray sorted based on ArrayToSortBy and subsorted by UnsortedArray value.  This is a case insensitive sort.
 
 If RemoveDuplicates is true, it also removes any elements where its pair is duplicated in both arrays.
 
 See also: [[getArrayReverseSortedByOtherArray]]
-</tw-passagedata><tw-passagedata pid="149" name="isArray" tags="" position="3375,775" size="100,100">&#39;&#39;isArray(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="149" name="isArray" tags="" position="3375,900" size="100,100">&#39;&#39;isArray(Value)&#39;&#39; = t/f
 
 Returns if a value is an array.
 
-</tw-passagedata><tw-passagedata pid="150" name="isArrayOfBooleans" tags="" position="3375,900" size="100,100">&#39;&#39;isArrayOfBooleans(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="150" name="isArrayOfBooleans" tags="" position="3375,1025" size="100,100">&#39;&#39;isArrayOfBooleans(Value)&#39;&#39; = t/f
 
 Test an array to see if all the values are booleans.  Returns NULL on error.
 
-</tw-passagedata><tw-passagedata pid="151" name="isArrayOfNumbers" tags="" position="3375,1025" size="100,100">&#39;&#39;isArrayOfNumbers(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="151" name="isArrayOfNumbers" tags="" position="3375,1150" size="100,100">&#39;&#39;isArrayOfNumbers(Value)&#39;&#39; = t/f
 
 Test an array to see if all the values are numbers.  Returns NULL on error.
 
-</tw-passagedata><tw-passagedata pid="152" name="isArrayOfStrings" tags="" position="3375,1150" size="100,100">&#39;&#39;isArrayOfStrings(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="152" name="isArrayOfStrings" tags="" position="3375,1275" size="100,100">&#39;&#39;isArrayOfStrings(Value)&#39;&#39; = t/f
 
 Test an array to see if all the values are strings.  Returns NULL on error.
 
-</tw-passagedata><tw-passagedata pid="153" name="isBoolean" tags="" position="3375,1275" size="100,100">&#39;&#39;isBoolean(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="153" name="isBoolean" tags="" position="3500,150" size="100,100">&#39;&#39;isBoolean(Value)&#39;&#39; = t/f
 
 Returns if a value is a boolean.
 
-</tw-passagedata><tw-passagedata pid="154" name="isNumber" tags="" position="3500,650" size="100,100">&#39;&#39;isNumber(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="154" name="isNumber" tags="" position="3500,775" size="100,100">&#39;&#39;isNumber(Value)&#39;&#39; = t/f
 
 Returns if a value is a number.
 
-</tw-passagedata><tw-passagedata pid="155" name="isObject" tags="" position="3500,775" size="100,100">&#39;&#39;isObject(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="155" name="isObject" tags="" position="3500,900" size="100,100">&#39;&#39;isObject(Value)&#39;&#39; = t/f
 
 Returns if a value is an object.
 
 &#39;&#39;Note:&#39;&#39; Arrays are a type of object.  If you don&#39;t want to include other objects, such as arrays, use [[isGenericObject]] instead.
-</tw-passagedata><tw-passagedata pid="156" name="isString" tags="" position="3500,1150" size="100,100">&#39;&#39;isString(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="156" name="isString" tags="" position="3500,1275" size="100,100">&#39;&#39;isString(Value)&#39;&#39; = t/f
 
 Returns if a value is a string.
-</tw-passagedata><tw-passagedata pid="157" name="isUndefined" tags="" position="3500,1275" size="100,100">&#39;&#39;isUndefined(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="157" name="isUndefined" tags="" position="3625,150" size="100,100">&#39;&#39;isUndefined(Value)&#39;&#39; = t/f
 
 Returns if a value is undefined.
 
-</tw-passagedata><tw-passagedata pid="158" name="numberToAPString" tags="" position="3625,150" size="100,100">&#39;&#39;numberToAPString(Value)&#39;&#39; = returns the number as an AP style formatted string
+</tw-passagedata><tw-passagedata pid="158" name="numberToAPString" tags="" position="3625,275" size="100,100">&#39;&#39;numberToAPString(Value)&#39;&#39; = returns the number as an AP style formatted string
 
 Converts a number to a string that conforms to basic AP writing style guidelines.
 
@@ -12969,11 +12974,11 @@ Only numbers &quot;0&quot; up to and including &quot;9&quot; will get changed to
 For exceptions see: [[https://writingexplained.org/ap-style/ap-style-numbers]]
 
 
-</tw-passagedata><tw-passagedata pid="159" name="objectsAreEqual" tags="" position="3625,275" size="100,100">&#39;&#39;objectsAreEqual(Object1, Object2)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="159" name="objectsAreEqual" tags="" position="3625,400" size="100,100">&#39;&#39;objectsAreEqual(Object1, Object2)&#39;&#39; = t/f
 
 Check two objects to see if they&#39;re identical.
 
-</tw-passagedata><tw-passagedata pid="160" name="valuesAreEqual" tags="" position="3625,400" size="100,100">&#39;&#39;valuesAreEqual(Var1, Var2)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="160" name="valuesAreEqual" tags="" position="3625,525" size="100,100">&#39;&#39;valuesAreEqual(Var1, Var2)&#39;&#39; = t/f
 
 Check two variables to see if they&#39;re identical.  This function does not support comparing symbols, functions, or custom types.
 
@@ -12993,7 +12998,7 @@ Changes an item&#39;s default item type.  Returns true on success or false on er
 You will likely never need to use this function.
 
 However, you may want to use it if you edit an item&#39;s type to the point where it more closely resembles another item&#39;s type.  In this case, switching its type to that other item type will reduce the amount of data Twine has to save in your story&#39;s history.
-</tw-passagedata><tw-passagedata pid="163" name="isProperty" tags="" position="3500,900" size="100,100">&#39;&#39;isProperty(Obj, Prop)&#39;&#39;
+</tw-passagedata><tw-passagedata pid="163" name="isProperty" tags="" position="3500,1025" size="100,100">&#39;&#39;isProperty(Obj, Prop)&#39;&#39;
 
 Returns if Prop is a property of the object Obj.  The Prop parameter should be passed in the form of a string.
 
@@ -13007,7 +13012,7 @@ Returns the bag object which matches &#39;&#39;DefaultBagType&#39;&#39;, or if &
 
 Normally you won&#39;t call this function yourself, but UInv uses it in [[AddBag]] to add that bag with its default properties and items, and in other functions to check the default properties of the items you added.
 
-You set the default bag properties and items in UInv&#39;s &#39;&#39;BagData&#39;&#39; function, at the bottom of the UInv code.
+You set the default bag properties and items in UInv&#39;s [[BagData]] function, at the bottom of the UInv code.
 
 &#39;&#39;__IMPORTANT!:__&#39;&#39;
 * Bag types must be unique strings in all lowercase.
@@ -13118,15 +13123,15 @@ Returns an array of all items in BagName that are tied for the most tags from It
 &lt;option value=&quot;boolean&quot;&gt;Boolean&lt;/option&gt;
 &lt;option value=&quot;image&quot;&gt;Image&lt;/option&gt;
 &lt;/select&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;th&gt;Property Value:&lt;/th&gt;&lt;td&gt;&lt;span id=&quot;PropVal&quot;&gt;&lt;&lt;textbox &quot;$PropertyValue&quot; &quot;weapon&quot;&gt;&gt;&lt;/span&gt;&lt;span id=&quot;PropValBool&quot; class=&quot;hidden&quot;&gt;True: &lt;&lt;radiobutton &quot;$PropertyValueBool&quot; &quot;true&quot; checked&gt;&gt; / False: &lt;&lt;radiobutton &quot;$PropertyValueBool&quot; &quot;false&quot;&gt;&gt;&lt;/span&gt;&lt;/td&gt;&lt;th align=&quot;right&quot;&gt;Add as tags: &lt;&lt;checkbox &quot;$UseTags&quot; false true&gt;&gt; &lt;/th&gt;&lt;td&gt;@@#AddEditProp;&lt;&lt;button &quot;Add/Edit Property&quot;&gt;&gt;&lt;&lt;run AddProperty()&gt;&gt;&lt;&lt;/button&gt;&gt;@@&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;table width=&quot;100%&quot; id=&quot;ImgTbl&quot; class=&quot;hidden&quot;&gt;&lt;col width=&quot;102px&quot;&gt;&lt;col&gt;&lt;col width=&quot;64px&quot;&gt;&lt;col&gt;&lt;tr&gt;&lt;th&gt;Browse:&lt;/th&gt;&lt;td&gt;&lt;input id=&quot;Img&quot; name=&quot;Img&quot; type=&quot;file&quot; accept=&quot;.jpg, .jpeg, .png, .svg, .gif, .ico&quot; class=&quot;link-internal macro-button&quot; style=&quot;width: calc(100% - 20px);&quot;&gt;&lt;/td&gt;&lt;th&gt;Select:&lt;/th&gt;&lt;td&gt;&lt;select id=&quot;Images&quot;&gt;&lt;/select&gt;&lt;/td&gt;&lt;/tr&gt;&lt;&lt;set _Path = setup.Path + &quot;images/&quot;&gt;&gt;
+&lt;tr&gt;&lt;th&gt;Property Value:&lt;/th&gt;&lt;td&gt;&lt;span id=&quot;PropVal&quot;&gt;&lt;&lt;textbox &quot;$PropertyValue&quot; &quot;weapon&quot;&gt;&gt;&lt;/span&gt;&lt;span id=&quot;PropValBool&quot; class=&quot;hidden&quot;&gt;True: &lt;&lt;radiobutton &quot;$PropertyValueBool&quot; &quot;true&quot; checked&gt;&gt; / False: &lt;&lt;radiobutton &quot;$PropertyValueBool&quot; &quot;false&quot;&gt;&gt;&lt;/span&gt;&lt;/td&gt;&lt;th title=&quot;Mark this checkbox to give multiple values (tags) to the current property.&quot; align=&quot;right&quot;&gt;Add as tags: &lt;&lt;checkbox &quot;$UseTags&quot; false true&gt;&gt; &lt;/th&gt;&lt;td&gt;@@#AddEditProp;&lt;&lt;button &quot;Add/Edit Property&quot;&gt;&gt;&lt;&lt;run AddProperty()&gt;&gt;&lt;&lt;/button&gt;&gt;@@&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;table width=&quot;100%&quot; id=&quot;ImgTbl&quot; class=&quot;hidden&quot;&gt;&lt;col width=&quot;102px&quot;&gt;&lt;col&gt;&lt;col width=&quot;64px&quot;&gt;&lt;col&gt;&lt;tr&gt;&lt;th&gt;Browse:&lt;/th&gt;&lt;td&gt;&lt;input id=&quot;Img&quot; name=&quot;Img&quot; type=&quot;file&quot; accept=&quot;.jpg, .jpeg, .png, .svg, .gif, .ico&quot; class=&quot;link-internal macro-button&quot; style=&quot;width: calc(100% - 20px);&quot;&gt;&lt;/td&gt;&lt;th&gt;Select:&lt;/th&gt;&lt;td&gt;&lt;select id=&quot;Images&quot;&gt;&lt;/select&gt;&lt;/td&gt;&lt;/tr&gt;&lt;&lt;set _Path = setup.Path + &quot;images/&quot;&gt;&gt;
 &lt;tr&gt;&lt;th&gt;Temp Path:&lt;/th&gt;&lt;td&gt;&lt;&lt;textbox &quot;_Path&quot; _Path&gt;&gt;&lt;/td&gt;&lt;th&gt;Image:&lt;/th&gt;&lt;td&gt;&lt;img id=&quot;ImageBox&quot; src=&quot;&quot; title=&quot;Click to see image full size.&quot; class=&quot;modalIcon&quot; style=&quot;max-height: 36px; border: 1px solid white; padding: 1px; vertical-align: middle; float: left; margin-right: 8px;&quot;&gt;(Click image to view full size)&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;table width=&quot;100%&quot;&gt;&lt;col width=&quot;25%&quot;&gt;&lt;col width=&quot;25%&quot;&gt;&lt;col width=&quot;25%&quot;&gt;&lt;col width=&quot;25%&quot;&gt;&lt;tr&gt;&lt;th&gt;Items:&lt;/th&gt;&lt;th&gt;Properties:&lt;/th&gt;&lt;th&gt;&lt;span id=&quot;ValTitle&quot;&gt;Value:&lt;/span&gt;&lt;span id=&quot;TagTitle&quot; class=&quot;hidden&quot;&gt;Tags: &lt;span id=&quot;TagSrt&quot; title=&quot;Sort tags&quot;&gt;&lt;&lt;button &quot;S&quot;&gt;&gt;&lt;&lt;run SortTags()&gt;&gt;&lt;&lt;/button&gt;&gt;&lt;/span&gt; &lt;span id=&quot;TagUp&quot; title=&quot;Move tag up&quot;&gt;&lt;&lt;button &quot;▲&quot;&gt;&gt;&lt;&lt;run MoveTag(&quot;up&quot;)&gt;&gt;&lt;&lt;/button&gt;&gt;&lt;/span&gt; &lt;span id=&quot;TagDn&quot; title=&quot;Move tag down&quot;&gt;&lt;&lt;button &quot;▼&quot;&gt;&gt;&lt;&lt;run MoveTag(&quot;down&quot;)&gt;&gt;&lt;&lt;/button&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/th&gt;&lt;th&gt;&lt;span id=&quot;Opts&quot;&gt;Value Options:&lt;/span&gt;&lt;/th&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;select size=&quot;5&quot; id=&quot;Items&quot; onchange=&quot;UpdateList(this.options[this.selectedIndex].text); this.focus();&quot;&gt;&lt;/select&gt;&lt;/td&gt;&lt;td&gt;&lt;select size=&quot;5&quot; id=&quot;Properties&quot; onchange=&quot;UpdateList(undefined, this.options[this.selectedIndex].text); this.focus();&quot;&gt;&lt;/select&gt;&lt;/td&gt;&lt;td&gt;&lt;select size=&quot;5&quot; id=&quot;Values&quot; onchange=&quot;UpdateList(undefined, undefined, this.options[this.selectedIndex].text); this.focus();&quot;&gt;&lt;/select&gt;&lt;/td&gt;&lt;td style=&quot;vertical-align: top;&quot;&gt;&lt;select size=&quot;5&quot; id=&quot;Tags&quot; onchange=&quot;ReadyTagsButton(); this.focus();&quot; multiple&gt;&lt;/select&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;@@#RmItemBtn;&lt;&lt;button &quot;Remove Item&quot;&gt;&gt;&lt;&lt;run RemoveItem()&gt;&gt;&lt;&lt;/button&gt;&gt;@@&lt;/td&gt;&lt;td&gt;@@#RmPropBtn;&lt;&lt;button &quot;Remove Property&quot;&gt;&gt;&lt;&lt;run RemoveProperty()&gt;&gt;&lt;&lt;/button&gt;&gt;@@&lt;/td&gt;&lt;td&gt;@@#RmTagBtn;&lt;&lt;button &quot;Remove Tag&quot;&gt;&gt;&lt;&lt;run RemoveTag()&gt;&gt;&lt;&lt;/button&gt;&gt;@@&lt;/td&gt;&lt;td&gt;@@#UseTags;&lt;&lt;button &quot;Use Selected Tags&quot;&gt;&gt;&lt;&lt;run SetTags()&gt;&gt;&lt;&lt;/button&gt;&gt;@@&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&#39;&#39;ItemData code:&#39;&#39; Copy and paste the code below into the &quot;static items&quot; section of the ItemData function (near the bottom of the UInv JavaScript code).
+&lt;tr&gt;&lt;td&gt;@@#RmItemBtn;&lt;&lt;button &quot;Remove Item&quot;&gt;&gt;&lt;&lt;run RemoveItem()&gt;&gt;&lt;&lt;/button&gt;&gt;@@&lt;/td&gt;&lt;td&gt;@@#RmPropBtn;&lt;&lt;button &quot;Remove Property&quot;&gt;&gt;&lt;&lt;run RemoveProperty()&gt;&gt;&lt;&lt;/button&gt;&gt;@@&lt;/td&gt;&lt;td&gt;@@#RmTagBtn;&lt;&lt;button &quot;Remove Tag&quot;&gt;&gt;&lt;&lt;run RemoveTag()&gt;&gt;&lt;&lt;/button&gt;&gt;@@&lt;/td&gt;&lt;td&gt;@@#UseTags;&lt;&lt;button &quot;Use Selected Tags&quot;&gt;&gt;&lt;&lt;run SetTags()&gt;&gt;&lt;&lt;/button&gt;&gt;@@&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&#39;&#39;ItemData code:&#39;&#39; Copy and paste the code below into the &quot;static items&quot; section of the [[ItemData]] function (near the bottom of the UInv JavaScript code).
 &lt;&lt;textarea &quot;_ItemData&quot; &quot;&quot;&gt;&gt;
 
 Please note that the &#39;&#39;UInv Item Builder&#39;&#39; can only handle strings, numbers, booleans, and arrays of those three types (image filenames are stored as strings).  Anything else will require manual editing of the resulting code.  See [[GetDefaultItemObject]] for details.
 
-If you want to have your current items import here automatically, simply paste the item data from your story into the &#39;&#39;ItemData&#39;&#39; function of the JavaScript in this Twine story, then add your items to the bag named &quot;Items&quot; in the StoryInit passage.  They will then be listed here when you enter the UInv Item Builder.
+If you want to have your current items import here automatically, simply paste the item data from your story into the [[ItemData]] function of the JavaScript in this Twine story, then add your items to the bag named &quot;Items&quot; in the {{{StoryInit}}} passage.  They will then be listed here when you enter the UInv Item Builder.
 
 Also, you can use the &quot;SAVES&quot; button on the left panel to save or load work you&#39;ve done in the Item Builder.</tw-passagedata><tw-passagedata pid="181" name="GetMissingBagTagsArray" tags="" position="2475,1025" size="100,100">&#39;&#39;GetMissingBagTagsArray(BagName, BagPropertyName, BagTagArray)&#39;&#39; returns an array of all tags in BagTagArray which were not found on the BagPropertyName for that bag
 
@@ -13147,15 +13152,15 @@ Returns whether bag exactly matches its default version, or &quot;null&quot; on 
 
 Returns an array of unique (string, number, and boolean) values for all items with ItemPropertyName in all bags in BagName/Array, or &quot;null&quot; on error.  (use GetUniqueItemTagsArray instead for properties which have array values)
 
-</tw-passagedata><tw-passagedata pid="187" name="isDate" tags="" position="3500,150" size="100,100">&#39;&#39;isDate(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="187" name="isDate" tags="" position="3500,275" size="100,100">&#39;&#39;isDate(Value)&#39;&#39; = t/f
 
 Returns if a value is a date.
 
-</tw-passagedata><tw-passagedata pid="188" name="isFunction" tags="" position="3500,275" size="100,100">&#39;&#39;isFunction(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="188" name="isFunction" tags="" position="3500,400" size="100,100">&#39;&#39;isFunction(Value)&#39;&#39; = t/f
 
 Returns if a value is a function.
 
-</tw-passagedata><tw-passagedata pid="189" name="isRegExp" tags="" position="3500,1025" size="100,100">&#39;&#39;isRegExp(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="189" name="isRegExp" tags="" position="3500,1150" size="100,100">&#39;&#39;isRegExp(Value)&#39;&#39; = t/f
 
 Returns if a value is a RegExp.
 
@@ -13200,7 +13205,7 @@ Gets the current bag name if there is one, otherwise returns &quot;&quot;.
 
 Swaps two items, optionally keeps certain item properties un-swapped.  Returns true on success, false on error.
 
-</tw-passagedata><tw-passagedata pid="195" name="isInteger" tags="" position="3500,525" size="100,100">&#39;&#39;isInteger(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="195" name="isInteger" tags="" position="3500,650" size="100,100">&#39;&#39;isInteger(Value)&#39;&#39; = t/f
 
 Returns if a value is an integer.
 
@@ -13215,7 +13220,7 @@ Returns a random tag from LowIndex to HighIndex (inclusive), returns &quot;null&
 </tw-passagedata><tw-passagedata pid="198" name="StoryCaption" tags="Excluded" position="75,325" size="100,100">&lt;input type=&quot;text&quot; id=&quot;SearchTxt&quot; style=&quot;width: calc(100% - 50px); min-width: auto; float: left;&quot;&gt;&lt;span id=&quot;Search&quot; alt=&quot;Search&quot; title=&quot;Search&quot; style=&quot;float: left;&quot;&gt;&lt;&lt;button &quot; &quot;&gt;&gt;&lt;&lt;run DoSearch()&gt;&gt;&lt;&lt;/button&gt;&gt;&lt;/span&gt;&lt;br&gt;
 &lt;span style=&quot;display: table; line-height: 2;&quot;&gt;Include &#39;&#39;all&#39;&#39; search terms: &lt;&lt;checkbox &quot;$SearchAll&quot; false true checked&gt;&gt;&lt;/span&gt;&lt;span style=&quot;display: table; line-height: 1;&quot;&gt;
 Results (by relevancy):&lt;/span&gt;&lt;select id=&quot;Results&quot; size=10 style=&quot;width: 100%; margin-top: 6px;&quot; onchange=&quot;GoToPassage(this.options[this.selectedIndex].value);&quot;&gt;
-&lt;/select&gt;&lt;input type=&quot;checkbox&quot; id=&quot;fullscreen&quot;&gt;&lt;label for=&quot;fullscreen&quot; class=&quot;gofullscreen&quot;&gt;&lt;img @src=&quot;setup.Path+&#39;images/FullScreenGo_white.png&#39;&quot; alt=&quot;Go full screen&quot; title=&quot;Go full screen&quot; class=&quot;fullscreenImg&quot;&gt;&lt;/label&gt;&lt;label for=&quot;fullscreen&quot; class=&quot;exitfullscreen&quot;&gt;&lt;img @src=&quot;setup.Path+&#39;images/FullScreenExit_white.png&#39;&quot; alt=&quot;Exit full screen&quot; title=&quot;Exit full screen&quot; class=&quot;fullscreenImg&quot;&gt;&lt;/label&gt;&lt;img @src=&quot;setup.Path+&#39;images/GrowF.png&#39;&quot; alt=&quot;Larger font&quot; title=&quot;Larger font&quot; class=&quot;fullscreenImg&quot; style=&quot;top: 70px;&quot; onclick=&quot;fontSize(1)&quot;&gt;&lt;img @src=&quot;setup.Path+&#39;images/ShrinkF.png&#39;&quot; alt=&quot;Smaller font&quot; title=&quot;Smaller font&quot; class=&quot;fullscreenImg&quot; style=&quot;top: 100px;&quot; onclick=&quot;fontSize(-1)&quot;&gt;
+&lt;/select&gt;&lt;input type=&quot;checkbox&quot; id=&quot;fullscreen&quot;&gt;&lt;label for=&quot;fullscreen&quot; class=&quot;gofullscreen&quot;&gt;&lt;img src=&#39;data:image/svg+xml;charset=UTF-8,&lt;svg viewBox=&quot;0 0 512 512&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;&gt;&lt;path d=&quot;m82 324v87c0 11 8 19 19 19h88c15 0 22-17 11-29l-27-28 83-83 83 83-27 28c-11 11-4 29 11 29h88c11 0 19-8 19-19v-87c0-15-17-23-29-12l-28 27-83-83 83-83 28 27c11 11 29 3 29-12v-87c0-11-8-19-19-19h-88c-15 0-22 17-11 29l27 28-83 83-83-83 27-28c11-11 4-29-11-29h-88c-11 0-19 8-19 19v87c0 15 17 23 29 12l28-27 83 83-83 83-28-27c-12-11-29-4-29 12zm374 188h-400c-30 0-56-26-56-56v-400c0-30 26-56 56-56h400c30 0 56 26 56 56v400c0 30-27 56-56 56zm-5-471h-390c-14 0-20 10-20 20v390c0 19 15 20 20 20h390c12 0 20-7 20-20v-390c0-17-11-20-20-20z&quot; fill=&quot;white&quot; /&gt;&lt;/svg&gt;&#39; alt=&quot;Go full screen&quot; title=&quot;Go full screen&quot; class=&quot;fullscreenImg&quot;&gt;&lt;/label&gt;&lt;label for=&quot;fullscreen&quot; class=&quot;exitfullscreen&quot;&gt;&lt;img src=&#39;data:image/svg+xml;charset=UTF-8,&lt;svg viewBox=&quot;0 0 512 512&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;&gt;&lt;path d=&quot;m65 99 83 83-27 28c-11 11-4 29 11 29h88c11 0 19-8 19-19v-87c0-15-17-23-29-12l-28 27-83-83zm117 265 28 27c11 11 29 3 29-12v-87c0-11-8-19-19-19h-88c-15 0-22 17-11 29l27 28-83 83 34 34zm265 49-83-83 27-28c11-11 4-29-11-29h-88c-11 0-19 8-19 19v87c0 15 17 23 29 12l28-27 83 83zm-117-265-28-27c-12-11-29-4-29 12v87c0 11 8 19 19 19h88c15 0 22-17 11-29l-27-28 83-83-34-34zm126 364h-400c-30 0-56-26-56-56v-400c0-30 26-56 56-56h400c30 0 56 26 56 56v400c0 30-27 56-56 56zm-5-471h-390c-17 0-20 10-20 20v390c0 16 10 20 20 20h390c8 0 20-4 20-20v-390c0-18-12-20-20-20z&quot; fill=&quot;white&quot; /&gt;&lt;/svg&gt;&#39; alt=&quot;Exit full screen&quot; title=&quot;Exit full screen&quot; class=&quot;fullscreenImg&quot;&gt;&lt;/label&gt;&lt;img @src=&quot;setup.Path+&#39;images/GrowF.png&#39;&quot; alt=&quot;Larger font&quot; title=&quot;Larger font&quot; class=&quot;fullscreenImg&quot; style=&quot;top: 70px;&quot; onclick=&quot;fontSize(1)&quot;&gt;&lt;img @src=&quot;setup.Path+&#39;images/ShrinkF.png&#39;&quot; alt=&quot;Smaller font&quot; title=&quot;Smaller font&quot; class=&quot;fullscreenImg&quot; style=&quot;top: 100px;&quot; onclick=&quot;fontSize(-1)&quot;&gt;
 &lt;&lt;script&gt;&gt;
 	$(&quot;#Search button&quot;).addClass(&quot;fas fa-search&quot;).css({ &quot;line-height&quot;: &quot;1.5em&quot; });
 	if (setup.JSLoaded) {
@@ -13252,7 +13257,7 @@ Results (by relevancy):&lt;/span&gt;&lt;select id=&quot;Results&quot; size=10 st
 &lt;&lt;if !UInv.BagExists(&quot;Items&quot;)&gt;&gt;
 	&lt;&lt;run UInv.CreateBag(&quot;Items&quot;)&gt;&gt;
 &lt;&lt;/if&gt;&gt;
-</tw-passagedata><tw-passagedata pid="200" name="getArrayReverseSortedByOtherArray" tags="" position="3375,150" size="100,100">&#39;&#39;getArrayReverseSortedByOtherArray(UnsortedArray, ArrayToSortBy, [RemoveDuplicates = false])&#39;&#39; = UnsortedArray reverse sorted based on ArrayToSortBy and subsorted by UnsortedArray value, if RemoveDuplicates is true, remove any with the same values across both arrays
+</tw-passagedata><tw-passagedata pid="200" name="getArrayReverseSortedByOtherArray" tags="" position="3375,275" size="100,100">&#39;&#39;getArrayReverseSortedByOtherArray(UnsortedArray, ArrayToSortBy, [RemoveDuplicates = false])&#39;&#39; = UnsortedArray reverse sorted based on ArrayToSortBy and subsorted by UnsortedArray value, if RemoveDuplicates is true, remove any with the same values across both arrays
 
 Returns UnsortedArray reverse sorted based on ArrayToSortBy and (&#39;&#39;NOT&#39;&#39; reverse) subsorted by UnsortedArray value.  This is a case insensitive sort.
 
@@ -13313,7 +13318,7 @@ Returns whether all of the item&#39;s tags exist in ItemTagArray, or null on err
 
 Returns the number of times an exact match for Tag is found in an item&#39;s tag array, or &quot;null&quot; on error.
 
-</tw-passagedata><tw-passagedata pid="212" name="Engine Detection" tags="" position="3625,525" size="100,100">SugarCube includes [[normalize.css|https://necolas.github.io/normalize.css/]], which tries to make HTML elements work the same in all browsers, but in the cases where they don&#39;t, or if you need to work around problems with JavaScript that doesn&#39;t work in certain browsers, you can use the following UInv functions to easily detect what browser you&#39;re in.
+</tw-passagedata><tw-passagedata pid="212" name="Engine Detection" tags="" position="3625,650" size="100,100">SugarCube includes [[normalize.css|https://necolas.github.io/normalize.css/]], which tries to make HTML elements work the same in all browsers, but in the cases where they don&#39;t, or if you need to work around problems with JavaScript that doesn&#39;t work in certain browsers, you can use the following UInv functions to easily detect what browser you&#39;re in.
 
 &#39;&#39;UInv.isAndroid()&#39;&#39; = true when running on Android
 &#39;&#39;UInv.isBlackBerry()&#39;&#39; = true when running on BlackBerry
@@ -13334,43 +13339,38 @@ You could also use these functions, along with {{{Browser.userAgent}}}, to add u
 
 </tw-passagedata><tw-passagedata pid="213" name="UInv Safe Save Code" tags="" position="200,625" size="100,100">&lt;center&gt;&lt;h2&gt;UInv Safe Save Code&lt;/h2&gt;&lt;/center&gt;Normally, if you change the value of a Twine/SugarCube &lt;span class=&quot;tooltip&quot;&gt;story variable&lt;span class=&quot;tooltiptext&quot;&gt;a variable that starts with a &quot;$&quot;&lt;/span&gt;&lt;/span&gt; after the current passage was initially displayed (such as might happen on an inventory screen), any such updates will &#39;&#39;not&#39;&#39; be saved.  The save will instead reflect the values that those variables had when you first entered the passage.
 
-If you want to make sure any changes made to UInv values after the passage is displayed are stored, add the following code to your JavaScript section:
+If you want to make sure any changes made to UInv values after the passage is displayed are stored, add the code below to your JavaScript section.
+
+&#39;&#39;**IMPORTANT**&#39;&#39; This should only be used on pages whid do &#39;&#39;NOT&#39;&#39; modify a UInv object&#39;s existing values, and also do &#39;&#39;NOT&#39;&#39; use any UInv values when entering the passage which may be modified.  Doing so will cause those changes to happen again.  So, for example, if the old man gives you the fantastically valuable sword in passage &quot;GetSword&quot;, then you&#39;d want to add the {{{NoSafeSave}}} to that passage, so that reloading their save in the &quot;GetSword&quot; passage doesn&#39;t get them a second sword.
+
+Copy this to your JavaScript section:
 {{{
 Config.saves.onSave = function (save) {
-	// Makes sure that the current state is saved.
-	save.state.history[save.state.index].variables.UInvBags = State.variables.UInvBags;
-	if (UInv.isProperty(State.variables, &quot;UInvCurrentBagName&quot;)) {
-		save.state.history[save.state.index].variables.UInvCurrentBagName = State.variables.UInvCurrentBagName;
-	} else if (UInv.isProperty(save.state.history[save.state.index].variables, &quot;UInvCurrentBagName&quot;)) {
-		delete save.state.history[save.state.index].variables.UInvCurrentBagName;
+
+	function UpdateVar(VarName) {
+		if (UInv.isProperty(State.variables, VarName)) {
+			save.state.history[save.state.index].variables[VarName] = State.variables[VarName];
+		} else if (UInv.isProperty(save.state.history[save.state.index].variables, VarName)) {
+			delete save.state.history[save.state.index].variables[VarName];
+		}
 	}
-	if (UInv.isProperty(State.variables, &quot;UInvCurrentItemName&quot;)) {
-		save.state.history[save.state.index].variables.UInvCurrentItemName = State.variables.UInvCurrentItemName;
-	} else if (UInv.isProperty(save.state.history[save.state.index].variables, &quot;UInvCurrentItemName&quot;)) {
-		delete save.state.history[save.state.index].variables.UInvCurrentItemName;
+
+	if (!tags().includes(&quot;NoSafeSave&quot;)) {
+		// Makes sure that the current state is saved as long as the passage doesn&#39;t have a &quot;NoSafeSave&quot; tag.
+		UpdateVar(&quot;UInvBags&quot;);
+		UpdateVar(&quot;UInvCurrentBagName&quot;);
+		UpdateVar(&quot;UInvCurrentItemName&quot;);
+		UpdateVar(&quot;UInvShowAlerts&quot;);
+		UpdateVar(&quot;UInvLastErrorMessage&quot;);
+		UpdateVar(&quot;UInvErrorStringAddendum&quot;);
+		UpdateVar(&quot;UInvMergeItemMethod&quot;);
+		UpdateVar(&quot;UInvUpdatesAreLocked&quot;);
+		UpdateVar(&quot;UInvEventHandlers&quot;);
 	}
-	if (UInv.isProperty(State.variables, &quot;UInvShowAlerts&quot;)) {
-		save.state.history[save.state.index].variables.UInvShowAlerts = State.variables.UInvShowAlerts;
-	} else if (UInv.isProperty(save.state.history[save.state.index].variables, &quot;UInvShowAlerts&quot;)) {
-		delete save.state.history[save.state.index].variables.UInvShowAlerts;
-	}
-	save.state.history[save.state.index].variables.UInvLastErrorMessage = State.variables.UInvLastErrorMessage;
-	if (UInv.isProperty(State.variables, &quot;UInvErrorStringAddendum&quot;)) {
-		save.state.history[save.state.index].variables.UInvErrorStringAddendum = State.variables.UInvErrorStringAddendum;
-	} else if (UInv.isProperty(save.state.history[save.state.index].variables, &quot;UInvErrorStringAddendum&quot;)) {
-		delete save.state.history[save.state.index].variables.UInvErrorStringAddendum;
-	}
-	save.state.history[save.state.index].variables.UInvMergeItemMethod = State.variables.UInvMergeItemMethod;
-	if (UInv.isProperty(State.variables, &quot;UInvUpdatesAreLocked&quot;)) {
-		save.state.history[save.state.index].variables.UInvUpdatesAreLocked = State.variables.UInvUpdatesAreLocked;
-	} else if (UInv.isProperty(save.state.history[save.state.index].variables, &quot;UInvUpdatesAreLocked&quot;)) {
-		delete save.state.history[save.state.index].variables.UInvUpdatesAreLocked;
-	}
-	save.state.history[save.state.index].variables.UInvEventHandlers = State.variables.UInvEventHandlers;
 };
 }}}
 
-That function will get triggered whenever the user tries to save their game, and it will update the save history to match the current UInv state.
+Unless the current passage has a {{{NoSafeSave}}} tag, that function will get triggered whenever the user tries to save their game.  When it gets triggered it will update the save history to match the current UInv state.
 
 If you have any other non-UInv variables which might have been updated that you also want to save, you will need to add them to that code as well.</tw-passagedata><tw-passagedata pid="214" name="Aliases" tags="" position="200,775" size="100,100">
 (Explain aliases.)
@@ -13419,7 +13419,7 @@ So, if I do &#96;&lt;&lt;set $ObjectA = $ObjectB&gt;&gt;&#96; then within that p
 This means that if you do &#96;&lt;&lt;set $ObjectA = $ObjectB&gt;&gt;&lt;&lt;set $ObjectB.X = 10&gt;&gt;&#96; in the same passage, then &#96;$ObjectA.X&#96; will *also* get set to &#96;10&#96;.  However, if you change passages and then set the value of &#96;$ObjectB.X&#96; again, it will no longer affect the value of &#96;$ObjectA.X&#96;.
 
 }}}
-</tw-passagedata><tw-passagedata pid="216" name="Item Collision" tags="" position="200,925" size="100,100">Explain &quot;item collision&quot;.</tw-passagedata><tw-passagedata pid="217" name="capitalizeFirstLetter" tags="" position="3250,775" size="100,100">&#39;&#39;capitalizeFirstLetter(String)&#39;&#39;
+</tw-passagedata><tw-passagedata pid="216" name="Item Collision" tags="" position="200,925" size="100,100">Explain &quot;item collision&quot;.</tw-passagedata><tw-passagedata pid="217" name="capitalizeFirstLetter" tags="" position="3250,900" size="100,100">&#39;&#39;capitalizeFirstLetter(String)&#39;&#39;
 
 Converts the first letter of a string to upper case.
 
@@ -13573,13 +13573,13 @@ This function will call the [[FixTableCells]] function to guarantee that no item
 This function itself is called automatically any time a bag is &quot;touched&quot; (the quantity of items in the bag changes).  You only need to call it manually if any changes you make to items (such as changing the &quot;UInvCell&quot; property) do not trigger a &quot;touched&quot; event on a bag.
 
 See also: [[FixTableCells]] and [[WasTouched]]
-</tw-passagedata><tw-passagedata pid="223" name="isGenericObject" tags="" position="3500,400" size="100,100">&#39;&#39;isGenericObject(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="223" name="isGenericObject" tags="" position="3500,525" size="100,100">&#39;&#39;isGenericObject(Value)&#39;&#39; = t/f
 
 Returns if a value is a generic object.
 
 Passing non-generic objects, such as arrays, will cause this function to return false.  If you want to include other objects, use [[isObject]] instead.
 
-</tw-passagedata><tw-passagedata pid="224" name="getObjectProperties" tags="" position="3375,525" size="100,100">&#39;&#39;getObjectProperties(Object, [Ext])&#39;&#39;
+</tw-passagedata><tw-passagedata pid="224" name="getObjectProperties" tags="" position="3375,650" size="100,100">&#39;&#39;getObjectProperties(Object, [Ext])&#39;&#39;
 
 Returns all of the properties and values of an object as a string.  Non-objects get returned unchanged.
 
@@ -13617,7 +13617,7 @@ Returns a random ItemName that is of type ItemType.  If there are none it return
 
 Returns an array of ItemNames that are of type ItemType.  If there are none it returns an empty array.
 
-</tw-passagedata><tw-passagedata pid="229" name="cacheImages" tags="" position="3250,650" size="100,100">&#39;&#39;cacheImages(Path, ImageName/array, [Handler])&#39;&#39;
+</tw-passagedata><tw-passagedata pid="229" name="cacheImages" tags="" position="3250,775" size="100,100">&#39;&#39;cacheImages(Path, ImageName/array, [Handler])&#39;&#39;
 
 Allows you to preload images.  You can use the handler to receive notifications about load or error events.
 
@@ -13677,19 +13677,19 @@ function CacheEvent(Image) {
 That triggers the {{{cacheImages()}}} function only after the passage is loaded and displayed.
 
 See [[getCachedImageObject]] to see how to get access to specific images in the cache.
-</tw-passagedata><tw-passagedata pid="230" name="flushAllCachedImages" tags="" position="3250,1150" size="100,100">&#39;&#39;flushAllCachedImages([MaxConcurrent], [MaxCache])&#39;&#39;
+</tw-passagedata><tw-passagedata pid="230" name="flushAllCachedImages" tags="" position="3250,1275" size="100,100">&#39;&#39;flushAllCachedImages([MaxConcurrent], [MaxCache])&#39;&#39;
 
 Clears out all cached images.  Also lets you set the maximum number of concurrent images to download (defaults to 5) and the maximum images to cache (defaults to 100).  Returns true on success and false on error.
 
 See: [[cacheImages]]
 
-</tw-passagedata><tw-passagedata pid="231" name="flushCachedImages" tags="" position="3250,1275" size="100,100">&#39;&#39;flushCachedImages(Path, ImageName/array)&#39;&#39;
+</tw-passagedata><tw-passagedata pid="231" name="flushCachedImages" tags="" position="3375,150" size="100,100">&#39;&#39;flushCachedImages(Path, ImageName/array)&#39;&#39;
 
 Allows you to manually unload previously cached images.
 
 See: [[cacheImages]]
 
-</tw-passagedata><tw-passagedata pid="232" name="getCachedImageObject" tags="" position="3375,400" size="100,100">&#39;&#39;getCachedImageObject(Path, ImageName)&#39;&#39;
+</tw-passagedata><tw-passagedata pid="232" name="getCachedImageObject" tags="" position="3375,525" size="100,100">&#39;&#39;getCachedImageObject(Path, ImageName)&#39;&#39;
 
 Returns a reference to the cached image object.  This function returns &quot;null&quot; if the image is not in the cache or if there is an error.
 
@@ -13712,23 +13712,23 @@ See: [[cacheImages]]
 
 Updates and/or adds values to multiple properties on an item.  Returns &quot;true&quot; if all items get added successfully, &quot;false&quot; if some items fail, or &quot;null&quot; if there is a problem with the parameters passed to the function.
 
-</tw-passagedata><tw-passagedata pid="234" name="docHasCSSElement" tags="" position="3250,1025" size="100,100">&#39;&#39;docHasCSSElement(CSSElement)&#39;&#39;
+</tw-passagedata><tw-passagedata pid="234" name="docHasCSSElement" tags="" position="3250,1150" size="100,100">&#39;&#39;docHasCSSElement(CSSElement)&#39;&#39;
 
 If document has CSS element &quot;CSSElement&quot; (e.g. &quot;.xyz:hover&quot;), returns the element&#39;s &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleDeclaration&quot;&gt;CSSStyleDeclaration object&lt;/a&gt;, otherwise returns &quot;false&quot;.
 
-</tw-passagedata><tw-passagedata pid="235" name="isArrayOfArrays" tags="" position="3625,650" size="100,100">&#39;&#39;isArrayOfArrays(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="235" name="isArrayOfArrays" tags="" position="3625,775" size="100,100">&#39;&#39;isArrayOfArrays(Value)&#39;&#39; = t/f
 
 Test an array to see if all the values are arrays.  Returns NULL on error.
 
-</tw-passagedata><tw-passagedata pid="236" name="isArrayOfGenericObjects" tags="" position="3625,775" size="100,100">&#39;&#39;isArrayOfGenericObjects(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="236" name="isArrayOfGenericObjects" tags="" position="3625,900" size="100,100">&#39;&#39;isArrayOfGenericObjects(Value)&#39;&#39; = t/f
 
 Test an array to see if all the values are generic objects.  Returns NULL on error.
 
-</tw-passagedata><tw-passagedata pid="237" name="isArrayOfIntegers" tags="" position="3625,900" size="100,100">&#39;&#39;isArrayOfIntegers(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="237" name="isArrayOfIntegers" tags="" position="3625,1025" size="100,100">&#39;&#39;isArrayOfIntegers(Value)&#39;&#39; = t/f
 
 Test an array to see if all the values are integers.  Returns NULL on error.
 
-</tw-passagedata><tw-passagedata pid="238" name="isArrayOfObjects" tags="" position="3625,1025" size="100,100">&#39;&#39;isArrayOfObjects(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="238" name="isArrayOfObjects" tags="" position="3625,1150" size="100,100">&#39;&#39;isArrayOfObjects(Value)&#39;&#39; = t/f
 
 Test an array to see if all the values are objects.  Returns NULL on error.
 
@@ -13836,15 +13836,31 @@ Some events can use certain return values, which should be passed as a generic o
 
 See [[AddEventHandler]] for a list of {{{Group}}} and {{{Event}}} values.
 
-</tw-passagedata><tw-passagedata pid="249" name="combineGenericObjects" tags="" position="3250,900" size="100,100">&#39;&#39;combineGenericObjects(Obj1, Obj2)&#39;&#39;
+</tw-passagedata><tw-passagedata pid="249" name="combineGenericObjects" tags="" position="3250,1025" size="100,100">&#39;&#39;combineGenericObjects(Obj1, Obj2)&#39;&#39;
 
 Returns a new object that has the combined properties of Obj1 and Obj2, with Obj2&#39;s properties preferred when both objects have matching property names.  Returns &quot;undefined&quot; on error.
 
-</tw-passagedata><tw-passagedata pid="250" name="getRandomHexString" tags="" position="3375,650" size="100,100">&#39;&#39;getRandomHexString()&#39;&#39;
+</tw-passagedata><tw-passagedata pid="250" name="getRandomHexString" tags="" position="3375,775" size="100,100">&#39;&#39;getRandomHexString()&#39;&#39;
 
 Returns a random hexidecimal (0-9 and a-f) string of 6 characters.
 
 This can be useful if you need to generate a random ID.
+
+</tw-passagedata><tw-passagedata pid="251" name="BagData" tags="" position="875,1275" size="100,100">&#39;&#39;BagData&#39;&#39;
+
+This function is the one that stores your custom bags that you can design using the [[Bag Builder]], and is called by [[GetDefaultBagObject]] to get that information.  You should not call this function directly.
+
+See [[GetDefaultBagObject]] for details on how to add your data there.
+
+</tw-passagedata><tw-passagedata pid="252" name="ItemData" tags="" position="1925,1275" size="100,100">&#39;&#39;ItemData&#39;&#39;
+
+This function is the one that stores your custom items that you can design using the [[Item Builder]], and is called by [[GetDefaultItemObject]] to get that information.  You should not call this function directly.
+
+See [[GetDefaultItemObject]] for details on how to add your data there.
+
+</tw-passagedata><tw-passagedata pid="253" name="arrayObjectIncludes" tags="" position="3250,150" size="100,100">&#39;&#39;arrayObjectIncludes(ArrayOfGenericObjects, ObjProperty, Value)&#39;&#39; Returns whether the array has any objects with the property ObjProperty that has a matching value, or {{{null}}} on error.
+
+Searches an array for generic objects with a property of ObjProperty that == Value.  Returns {{{true}}} if it finds any matches, {{{false}}} when unable to find any matches, and {{{null}}} on error.
 
 </tw-passagedata></tw-storydata></div>
 	<script id="script-sugarcube" type="text/javascript">

@@ -103,7 +103,8 @@ var saveAs=saveAs||navigator.msSaveBlob&&navigator.msSaveBlob.bind(navigator)||f
 		<div id="init-loading"><div>Loading&hellip;</div></div>
 	</div>
 	<div id="store-area" hidden><tw-storydata name="UInv: Universal Inventory System" startnode="1" creator="Twine" creator-version="2.2.1" ifid="15C6DE27-72FB-4471-8B7E-61D683080629" zoom="0.6" format="SugarCube" format-version="2.27.0" options="" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">@import url('https://use.fontawesome.com/releases/v5.3.1/css/all.css');
-@import url('C:/Games/Universal Inventory System/css/all.css');
+@import url('C:/Games/Universal Inventory System/all.css');
+@import url('all.css');
 
 html {
 	font: 16px/1 'Meiryo', 'Segoe UI', 'Tahoma', 'Arimo', Verdana, serif;
@@ -283,7 +284,8 @@ code {
 	font-family: Tahoma;
 	font-size: 16px;
 	border-radius: 5px;
-}</style><script role="script" id="twine-user-script" type="text/twine-javascript">if (window.hasOwnProperty("storyFormat")) {
+}
+</style><script role="script" id="twine-user-script" type="text/twine-javascript">if (window.hasOwnProperty("storyFormat")) {
 	// Change this to the path where this HTML file is
 	// located if you want to run this from inside Twine.
 	setup.Path = "C:/Games/Universal Inventory System/";  // Running inside Twine application
@@ -295,7 +297,11 @@ setup.SoundPath = setup.Path + "sounds/";
 
 /* Load jQuery UI - Start */
 var JSLoaded = false;
-importStyles(setup.Path + "jquery-ui.css");
+if (document.location.href.indexOf("qjzhvmqlzvoo5lqnrvuhmg-on.drv.tw") !== -1) {  // Workaround for DriveToWeb bug
+	importStyles(setup.Path + "jquery-ui-fix.css");
+} else {
+	importStyles(setup.Path + "jquery-ui.css");
+}
 importScripts(setup.Path + "jquery-ui.js")
 	.then(function() {
 		JSLoaded = true;
@@ -304,18 +310,6 @@ importScripts(setup.Path + "jquery-ui.js")
 	}
 );
 /* Load jQuery UI - End */
-
-/* Load Font Awesome CSS - Start */
-setup.FALoaded = false;
-importStyles(setup.Path + "css/all.css")
-	.then( function() {
-		setup.FALoaded = true;
-	}).catch( function(error) {
-		alert("Error: Could not load 'css/all.css'. - " + error);
-	}
-);
-/* Load Font Awesome CSS - End */
-
 
 /* This code caches the images, which is useful when this is online. */
 /* See the "cacheImages" function in the UInv help file for details. */
@@ -332,7 +326,7 @@ $(document).one(':passageend', function (ev) {
 	}
 });
 
-
+/* This code makes sure the current UInv data is saved. */
 Config.saves.onSave = function (save) {
 	// Makes sure that the current state is saved.
 	save.state.history[save.state.index].variables.UInvBags = State.variables.UInvBags;

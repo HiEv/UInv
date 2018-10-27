@@ -12,8 +12,8 @@ Then there is the **display** layer, which will make it easy for you to add inve
 
 Anyways, that's the basic idea of the code.  Once it's closer to done I plan on writing proper documentation for it, doing function testing, making some sample code, and then posting it here.
 
-Current progress (as of September 25, '18):
- - ~97% done on coding (240 out of 248+ currently proposed functions).
+Current progress (as of October 26, '18):
+ - ~97% done on the base coding by function (240 out of 248+ currently proposed functions).
  - Very little sample code or testing done yet.
  - Documentation skeleton written.  Additional details and examples to be added later.
 
@@ -25,6 +25,6 @@ or some simple introductory sample code can be found at the following link:
 
 http://bit.ly/UInvSampleCode  (work in progress)
 
-I'm currently looking for pre-release testers, especially those willing to create mock-ups and text showing how they want the inventory system to work in their Twine projects.  If you're interested, email me at: **HiEv (5\*9-2) at Yahoo dot com** .
+Those are also included in the .zip file available here.  You can import those into Twine to see how they work.
 
 ### -- HiEv

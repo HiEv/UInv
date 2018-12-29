@@ -1,5 +1,5 @@
 Universal Inventory System (UInv) changelog
-by HiEv                v0.9.6 (pre-release)
+by HiEv                v0.9.7 (pre-release)
 
 A JavaScript inventory "plugin" for Twine 2 / SugarCube 2.
 
@@ -83,16 +83,64 @@ v0.9.6 - September 25, 2018 - (preview release 9)
     https://api.jqueryui.com/category/all/
     just include and load the jquery-ui.css and jquery-ui.js
     files, along with the "images/ui-*.png" images
+v0.9.7 - December 29, 2018 - (preview release 10)
+  - 40 new functions written (includint 2 macros) + 38 new functions planned
+  - added Pocket/Container functions; items can now contain other items
+  - updated existing functions to work with pockets properly
+  - updated more functions to support bag name arrays
+  - added a <<UInvSet>> macro to shorten calls to multiple UInv functions
+  - added a <<UInvTry>> macro to simplify error handling in TwineScript
+  - added more ways to add default items to default bags
+  - default return value on error was standardized to "undefined"
+  - enforced stricter verification of values for item names (must be lowercase, etc...)
+  - removed LockUpdates function; use IncrementUpdateLock and DecrementUpdateLock instead
+  - removed capitalizeFirstLetter function; use SugarCube's .toUpperFirst() instead
+  - discovered a function I wrote and apparently forgot to document anywhere (LOL)
+  - renamed the following functions to conform to consistent naming style (aliases added):
+    * ArrayHasAllBagProperties to BagHasAllProperties
+    * ArrayHasAllItemProperties to ItemHasAllProperties
+    * GetBagArrayWithAllProperties to GetBagsArrayWithAllProperties (added an "s")
+    * GetHighestBagPropertyValue to GetBagWithHighestPropertyValue
+    * GetHighestItemPropertyValue to GetItemWithHighestPropertyValue
+    * GetLowestBagPropertyValue to GetBagWithLowestPropertyValue
+    * GetLowestItemPropertyValue to GetItemWithLowestPropertyValue
+    * SetItemsPropertyValues to SetItemsPropertyValue (removed an "s")
+    * UpdateItemProperties to SetItemPropertyValues
+  - fixes/improvements to valuesAreEqual, arraysAreEqual, and objectsAreEqual
+  - corrected two minor inefficiencies in memory/history usage
+  - fixed a few incorrect function names in error messages
+  - fixed a problem with items changed to variable type still using default properties
+  - fixed a problem where variable type items might not merge when they should
+  - fixed GetBagWithHighestPropertyValue and GetBagWithLowestPropertyValue functions
+  - fixed a bug in BagHasAllProperties
+  - preliminary work on unit/regression testing tool (37 functions fully tested)
+  - property values may now be set to "undefined"
+  - new/updated general help file sections:
+    * Changelog
+    * Function Cheat Sheet
+    * Basic UInv Functions (incomplete)
+    * Error Handling (incomplete)
+    * Efficient UInv Coding
+    * Arrays vs Generic Objects (major improvements; incomplete)
+    * The UInv Data Structure
+  - worked on how help file entries should look for UInv functions (see "AddBag")
+  - modified UInv structure to support internal-use-only functions and variables
+    * this means you'll need to insert your bag, item, and alias definitions this update
+  - Over 10,000 non-blank lines of code and comments!  Yay for arbitrary milestones!
 
+If you're upgrading from v0.9.6 to v0.9.7 then, as noted above, you can't simply copy
+and paste the bottom chunk of code.  You'll need to insert your aliases, default bags,
+and default items into the v0.9.7 code.  Hopefully this will be the last time you'll
+need to do that.
 
 Please keep in mind that THIS IS PRE-RELEASE CODE. This means that A) some parts
 have had little or no testing, B) there are some known bugs (see below), C) the
 documentation and sample code are severely lacking in many places, and also
 D) some parts are still subject to change, which means future versions may not
 be backwards-compatible with this version. The base code is fairly stable at
-this point and will likely not change much, other than adding "pockets". However,
-compatibility with this version's display code will almost certainly be broken in
-future updates (though hopefully not too badly broken).
+this point and will likely not change much. However, compatibility with this
+version's display code will almost certainly be broken in future updates (though
+hopefully not too badly broken).
 
 In short, all of the code is currently "use at your own risk."
 

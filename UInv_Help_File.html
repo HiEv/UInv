@@ -2509,7 +2509,7 @@ $(document).on("click", function (ev) {
 		  just include and load the jquery-ui.css and jquery-ui.js
 		  files, along with the "images/ui-*.png" images
 	v0.9.7 - December 29, 2018 - (preview release 10)
-		- 40 new functions written (includint 2 macros) + 38 new functions planned
+		- 40 new functions written (including 2 macros) + 38 new functions planned
 		- added Pocket/Container functions; items can now contain other items
 		- updated existing functions to work with pockets properly
 		- updated more functions to support bag name arrays
@@ -17755,28 +17755,50 @@ The &#39;&#39;Options&#39;&#39; parameter is optional.  If used it changes the d
 * &quot;&#39;&#39;UseSuperscript&#39;&#39;&quot; = This displays the suffix as a superscript, instead of as normal text (e.g. instead of returning a value of &#39;&#39;11&#39;&#39; as &quot;&#39;&#39;11th&#39;&#39;&quot;, it will return it as &quot;&#39;&#39;11&lt;sup&gt;th&lt;/sup&gt;&#39;&#39;&quot; {{{11&lt;sup&gt;th&lt;/sup&gt;}}}).  This option will not affect ordinal text (i.e. &quot;first&quot; will remain &quot;first&quot;, etc...).
 
 </tw-passagedata><tw-passagedata pid="277" name="Changelog" tags="Unfinished" position="325,175" size="100,100">&lt;center&gt;&lt;h2&gt;Universal Inventory System Changelog&lt;/h2&gt;for &lt;&lt;=UInv.Version()&gt;&gt;&lt;/center&gt;
-v0.9.7? - ???, 2018 - (preview release 10)
-* ? new functions written + ? new functions planned
-* removed the LockUpdates and capitalizeFirstLetter functions
-* added Pocket/Container functions, items can now contain other items
+v0.9.7 - December 29, 2018 - (preview release 10)
+* 40 new functions written (including 2 macros) + 38 new functions planned
+* added Pocket/Container functions; items can now contain other items
 * updated existing functions to work with pockets properly
+* updated more functions to support bag name arrays
+* added a {{{&lt;&lt;UInvSet&gt;&gt;}}} macro to shorten calls to multiple UInv functions
+* added a {{{&lt;&lt;UInvTry&gt;&gt;}}} macro to simplify error handling in TwineScript
+* added more ways to add default items to default bags
+* default return value on error was standardized to &quot;undefined&quot;
+* enforced stricter verification of values for item names (must be lowercase, etc...)
+* removed LockUpdates function; use IncrementUpdateLock and DecrementUpdateLock instead
+* removed capitalizeFirstLetter function; use SugarCube&#39;s .toUpperFirst() instead
+* discovered a function I wrote and apparently forgot to document anywhere (LOL)
+* renamed the following functions to conform to consistent naming style (aliases added):
+** ArrayHasAllBagProperties to BagHasAllProperties
+** ArrayHasAllItemProperties to ItemHasAllProperties
+** GetBagArrayWithAllProperties to GetBagsArrayWithAllProperties (added an &quot;s&quot;)
+** GetHighestBagPropertyValue to GetBagWithHighestPropertyValue
+** GetHighestItemPropertyValue to GetItemWithHighestPropertyValue
+** GetLowestBagPropertyValue to GetBagWithLowestPropertyValue
+** GetLowestItemPropertyValue to GetItemWithLowestPropertyValue
+** SetItemsPropertyValues to SetItemsPropertyValue (removed an &quot;s&quot;)
+** UpdateItemProperties to SetItemPropertyValues
 * fixes/improvements to valuesAreEqual, arraysAreEqual, and objectsAreEqual
-* corrected two minor inefficiencies in memory usage
+* corrected two minor inefficiencies in memory/history usage
 * fixed a few incorrect function names in error messages
-* fixed GetBagsArrayWithAllProperties function name (was &quot;Bag&quot; instead of &quot;Bags&quot;)
-* added a {{{&lt;&lt;UInv&gt;&gt;}}} macro to shorten calls to multiple UInv functions
-* preliminary work on unit/regression testing tool (22? functions fully tested)
 * fixed a problem with items changed to variable type still using default properties
-* new general help file sections:
+* fixed a problem where variable type items might not merge when they should
+* fixed GetBagWithHighestPropertyValue and GetBagWithLowestPropertyValue functions
+* fixed a bug in BagHasAllProperties
+* preliminary work on unit/regression testing tool (37 functions fully tested)
+* property values may now be set to &quot;undefined&quot;
+* new/updated general help file sections:
 ** [[Changelog]]
 ** [[Function Cheat Sheet]]
-** [[Basic UInv Functions]]
+** [[Basic UInv Functions]] (incomplete)
+** [[Error Handling]] (incomplete)
 ** [[Efficient UInv Coding]]
+** [[Arrays vs Generic Objects]] (major improvements; incomplete)
 ** [[The UInv Data Structure]]
-* worked on how help file entries should look (see [[AddBag]])
+* worked on how help file entries should look for UInv functions (see &quot;AddBag&quot;)
 * modified UInv structure to support internal-use-only functions and variables
+** this means you&#39;ll need to insert your bag, item, and alias definitions this update
 * Over 10,000 non-blank lines of code and comments!  Yay for arbitrary milestones!
-* ???
 v0.9.6 - September 25, 2018 - (preview release 9)
 * 31 new functions written + 27 new functions planned
 * major bugfix in SwapItems and many &quot;Tag&quot; functions

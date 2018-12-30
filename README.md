@@ -28,5 +28,7 @@ Current progress (as of December 29, '18):
  - Preliminary testing begun (37 out of 280 functions fully tested, plus many partial tests).
  - Documentation skeleton written.  Additional details and examples to be added later.
  - Item and Table "builders" mostly written (see help file), other builders to come.
+ 
+ If you would like to support this project, you can do so via [Patreon](https://www.patreon.com/HiEv) or [PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=EA6ATKEY5463A&source=url).
 
 ### -- HiEv

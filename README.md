@@ -22,10 +22,12 @@ http://bit.ly/UInvSampleCode  (work in progress)
 
 Those are also included in the .ZIP file available here.  You can import those into Twine 2 to see how they work.
 
-Current progress (as of December 29, '18):
- - ~98% done on the base coding by function (280 out of 286+ currently proposed functions).
+You can always find the latest release here:  https://github.com/HiEv/UInv/releases
+
+Current progress (as of September 7, '19):
+ - ~97% done on the base coding by function (289 out of 299+ currently proposed items).
  - Very little sample code done yet.
- - Preliminary testing begun (37 out of 280 functions fully tested, plus many partial tests).
+ - Preliminary testing begun (37 out of 289 functions fully tested, plus many partial tests).
  - Documentation skeleton written.  Additional details and examples to be added later.
  - Item and Table "builders" mostly written (see help file), other builders to come.
  

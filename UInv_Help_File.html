@@ -18255,7 +18255,19 @@ The &#39;&#39;Options&#39;&#39; parameter is optional.  If used it changes the d
 * &quot;&#39;&#39;UseSuperscript&#39;&#39;&quot; = This displays the suffix as a superscript, instead of as normal text (e.g. instead of returning a value of &#39;&#39;11&#39;&#39; as &quot;&#39;&#39;11th&#39;&#39;&quot;, it will return it as &quot;&#39;&#39;11&lt;sup&gt;th&lt;/sup&gt;&#39;&#39;&quot; {{{11&lt;sup&gt;th&lt;/sup&gt;}}}).  This option will not affect ordinal text (i.e. &quot;first&quot; will remain &quot;first&quot;, etc...).
 
 </tw-passagedata><tw-passagedata pid="277" name="Changelog" tags="Unfinished" position="325,175" size="100,100">&lt;center&gt;&lt;h2&gt;Universal Inventory System Changelog&lt;/h2&gt;for &lt;&lt;=UInv.Version()&gt;&gt;&lt;/center&gt;
-v0.9.7 - December 29, 2018 - (preview release 10)
+&#39;&#39;v0.9.7.1&#39;&#39; (bugfix) - September 7, 2019 - (preview release 11)
+* 7 new functions written + 5 new functions planned
+* added support for Set and Map objects; UInv now supports all of SugarCube&#39;s supported types
+* added an &quot;Idle&quot; event to the &quot;cacheImages&quot; events.
+* fixed a problem the image cache had with some browsers
+* fixed a couple of bugs in the event handler code
+** note: this required some minor changes to the CSS generated for tables
+** Table Builder updated to accomodate CSS changes
+* added another bit of sample code to the UInv_Sample_Code.html file
+* another update to the &quot;UInv Safe Save Code&quot; in the UInv help file
+* numerous help file updates and fixes
+
+&#39;&#39;v0.9.7&#39;&#39; - December 29, 2018 - (preview release 10)
 * 40 new functions written (including 2 macros) + 38 new functions planned
 * added Pocket/Container functions; items can now contain other items
 * updated existing functions to work with pockets properly
@@ -18299,7 +18311,8 @@ v0.9.7 - December 29, 2018 - (preview release 10)
 * modified UInv structure to support internal-use-only functions and variables
 ** this means you&#39;ll need to insert your bag, item, and alias definitions this update
 * Over 10,000 non-blank lines of code and comments!  Yay for arbitrary milestones!
-v0.9.6 - September 25, 2018 - (preview release 9)
+
+&#39;&#39;v0.9.6&#39;&#39; - September 25, 2018 - (preview release 9)
 * 31 new functions written + 27 new functions planned
 * major bugfix in SwapItems and many &quot;Tag&quot; functions
 * all utility function names now start lowercase
@@ -18331,14 +18344,16 @@ v0.9.6 - September 25, 2018 - (preview release 9)
 *** Error
 * added Font Awesome support: https://fontawesome.com/free Just add the following line to the top of your Stylesheet/CSS section: {{{@import url(&#39;https://use.fontawesome.com/releases/v5.3.1/css/all.css&#39;);}}} See the &quot;FA_Icons.html&quot; file for the list of icons
 * jQuery UI is now required to support display elements: https://api.jqueryui.com/category/all/ Just include and load the jquery-ui.css and jquery-ui.js files, along with the &quot;images/ui-*.png&quot; images from the &quot;images&quot; folder
-v0.9.5 - July 23, 2018 - (preview release 8)
+
+&#39;&#39;v0.9.5&#39;&#39; - July 23, 2018 - (preview release 8)
 * 12 new functions written + 12 new functions planned
 * revamped error handling to add thrown errors
 * added utility functions for engine detection
 * saved a bit more memory/history size
 * major restructuring of item data 
 * added handling of variable items and variable bags
-v0.9.4 - July 8, 2018 - (preview release 7)
+
+&#39;&#39;v0.9.4&#39;&#39; - July 8, 2018 - (preview release 7)
 * 22 new functions written + 19 new functions planned
 * some functions renamed to conform to consistent naming style
 * centralized more functions for display utilities
@@ -18346,31 +18361,38 @@ v0.9.4 - July 8, 2018 - (preview release 7)
 * handled a potential problem with non-static default properties
 * improved compatibility with other browsers
 * moved utility functions inside UInv namespace
-v0.9.2 - May 23, 2018 - (preview release 6)
+
+&#39;&#39;v0.9.2&#39;&#39; - May 23, 2018 - (preview release 6)
 * 10 new functions written + 8 new functions planned
 * renamed BagCount to GetBagCount for more consistent naming style
 * moved data sections to bottom to make updating UInv easier
 * some bugs fixed
 * Item Builder added to UInv help file
-v0.9.1 - May 10, 2018 - (preview release 5)
+
+&#39;&#39;v0.9.1&#39;&#39; - May 10, 2018 - (preview release 5)
 * 18 new functions written + 11 new functions planned
 * added default bags
 * major rework of engine to allow deletion of default properties
 * some bugs fixed
-v0.8.6 - April 24, 2018 - (preview release 4)
+
+&#39;&#39;v0.8.6&#39;&#39; - April 24, 2018 - (preview release 4)
 * 25 new functions written + 13 new functions planned
 * some functions renamed to conform to consistent naming style
 * work on help file started (very preliminary)
-v0.7.7 - April 18, 2018 - (preview release 3)
+
+&#39;&#39;v0.7.7&#39;&#39; - April 18, 2018 - (preview release 3)
 * 32 new functions written + 27 new functions planned
 * some functions renamed to conform to consistent naming style
 * most previously incomplete functions are now complete
 * lots of debugging and additional error checking done
-v0.6.9 - April 6, 2018 - (preview release 2)
+
+&#39;&#39;v0.6.9&#39;&#39; - April 6, 2018 - (preview release 2)
 * 28 new functions written + 23 new functions planned
 * some functions renamed to conform to consistent naming style
-v0.5.7 - March 29, 2018 - (preview release 1)
-* 62 functions written out of 108 planned functions</tw-passagedata><tw-passagedata pid="278" name="GetBagItemArrayWhereItemPropertyEquals" tags="" position="1850,650" size="100,100">&#39;&#39;GetBagItemArrayWhereItemPropertyEquals(BagNameArray, ItemPropertyName, Value)&#39;&#39; = array of [[BagName, ItemName], ...] where the item&#39;s ItemPropertyName property == Value
+
+&#39;&#39;v0.5.7&#39;&#39; - March 29, 2018 - (preview release 1)
+* 62 functions written out of 108 planned functions
+</tw-passagedata><tw-passagedata pid="278" name="GetBagItemArrayWhereItemPropertyEquals" tags="" position="1850,650" size="100,100">&#39;&#39;GetBagItemArrayWhereItemPropertyEquals(BagNameArray, ItemPropertyName, Value)&#39;&#39; = array of [[BagName, ItemName], ...] where the item&#39;s ItemPropertyName property == Value
 
 Returns an array of [[BagName, ItemName], ...] where the item&#39;s ItemPropertyName property == Value (all entries are unique), or {{{undefined}}} on error.
 

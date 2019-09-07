@@ -2,6 +2,13 @@
 	global UInv, $, SugarCube
 */
 
+/* NOTE: The code below assumes that the following UInv functions all work properly:
+		Initialize
+		GetLastError
+		isProperty
+		isString
+		valuesAreEqual
+*/
 window.Tester = function(TestType) {
 	UInv.Initialize(UInv.ERROR_TO_CONSOLE);
 	var TestList;
@@ -154,7 +161,11 @@ var UtilityTestList = [
 	{ test: 'numberToAPString("X")', result: "X" },
 	{ test: 'numberToAPString(1, "X")', result: "one" },
 	{ test: 'numberToAPString("1")', result: "1" },
+	{ test: 'numberToAPString(-1)', result: "-1" },
+	{ test: 'numberToAPString(0)', result: "zero" },
 	{ test: 'numberToAPString(1)', result: "one" },
+	{ test: 'numberToAPString(9)', result: "nine" },
+	{ test: 'numberToAPString(10)', result: "10" },
 	{ test: 'numberToAPString(1000)', result: "1,000" },
 	{ test: 'numberToAPString(999999)', result: "999,999" },
 	{ test: 'numberToAPString(1000000)', result: "1 million" },
@@ -174,6 +185,33 @@ var UtilityTestList = [
 	{ test: 'numberToAPString(123111.34)', result: "123,111.34" },
 	{ test: 'numberToAPString(12111.345)', result: "12,111.35" },
 	{ test: 'numberToAPString(1111.3456)', result: "1,111.35" },
+	{ test: 'set $s = new Set([1, 2, 3, 4])', result: "* >" },
+	{ test: 'isSet($s)', result: true },
+	{ test: 'set $a = [1, 2, 3, 4]', result: "* >" },
+	{ test: 'isSet($a)', result: false },
+	{ test: 'set $m = new Map([ [1, "one"], [2, "two"], [3, "three"], [4, "four"] ])', result: "* >" },
+	{ test: 'isSet($m)', result: false },
+	{ test: 'set $X = new Set([1, 2, 3, 4])', result: "* >" },
+	{ test: 'isSet($X)', result: true },
+	{ test: 'set $Y = new Set([1, 2, 4, 3])', result: "* >" },
+	{ test: 'isSet($Y)', result: true },
+	{ test: 'set $Z = new Set([5, 6, 4, 3])', result: "* >" },
+	{ test: 'isSet($Z)', result: true },
+	{ test: 'setsAreEqual($s, $X)', result: true },
+	{ test: 'setsAreEqual($s, $Y)', result: false },
+	{ test: 'setsAreEqual($s, $Z)', result: false },
+	{ test: 'setsMatch($s, $X)', result: true },
+	{ test: 'setsMatch($s, $Y)', result: true },
+	{ test: 'setsMatch($s, $Z)', result: false },
+	{ test: 'isMap($m)', result: true },
+	{ test: 'isMap($a)', result: false },
+	{ test: 'isMap($s)', result: false },
+	{ test: 'set $B = new Map([ [1, "one"], [2, "two"], [3, "three"], [4, "four"] ])', result: "* >" },
+	{ test: 'isMap($B)', result: true },
+	{ test: 'set $C = new Map([ [5, "five"], [6, "six"], [7, "seven"], [8, "eight"] ])', result: "* >" },
+	{ test: 'isMap($C)', result: true },
+	{ test: 'mapsAreEqual($m, $B)', result: true },
+	{ test: 'mapsAreEqual($m, $C)', result: false },
 ];
 /*
 	UTILITY FUNCTIONS:
@@ -181,7 +219,7 @@ var UtilityTestList = [
 	Fully Tested:  (1 of 51 utility functions tested)
 		numberToAPString, ...
 	Partially Tested:
-		...
+		isSet, setsAreEqual, setsMatch, isMap, mapsAreEqual, ...
 	Currently Untested:
 		all
 	Currently Skipped:

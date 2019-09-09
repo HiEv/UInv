@@ -29,7 +29,7 @@ Those are also included in the .ZIP file available here.  You can import those i
 Current progress (as of September 9, '19):
  - ~97% done on the base coding by function (293 out of 303+ currently proposed items).
  - Very little sample code done yet.
- - Preliminary testing begun (37 out of 289 functions fully tested, plus many partial tests).
+ - Preliminary testing begun (37 out of 293 functions fully tested, plus many partial tests).
  - Documentation skeleton written.  Additional details and examples to be added later.
  - Item and Table "builders" mostly written (see help file), other builders to come.
 

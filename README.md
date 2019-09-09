@@ -14,8 +14,6 @@ There are also "**tags**", which are basically arrays of values on a property of
 
 Then there is the **display** layer, which will make it easy for you to add inventory tables, pop-up radial menus, health bars, a "clothing mannequin" (for dressing and equipping characters), a "shop" interface (to make buying and selling items easier), styelable drop-down menus with pictures, and more.
 
-You can always find the latest release here:  https://github.com/HiEv/UInv/releases
-
 For more information, you can take a look at an early version of the UInv help file at the link below:
 
 http://bit.ly/UInvHelp  (work in progress)
@@ -24,7 +22,7 @@ and some simple introductory UInv sample code can be found at the following link
 
 http://bit.ly/UInvSampleCode  (work in progress)
 
-Those are also included in the .ZIP file available here.  You can import those into Twine 2 to see how they work.
+Those are also included in [the .ZIP file available here](https://github.com/HiEv/UInv/releases).  You can import those into Twine 2 to see how they work.
 
 Current progress (as of September 9, '19):
  - ~97% done on the base coding by function (293 out of 303+ currently proposed items).

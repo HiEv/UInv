@@ -1,6 +1,6 @@
 /*
 	Universal Inventory System (UInv)
-	by HiEv                    v0.9.7.1 (bugfix)
+	by HiEv                    v0.9.7.2
 
 	A JavaScript inventory "plugin" for Twine 2 / SugarCube 2.
 
@@ -139,6 +139,10 @@
 		- added another bit of sample code to the UInv_Sample_Code.html file
 		- another update to the "UInv Safe Save Code" in the UInv help file
 		- numerous help file updates and fixes
+	v0.9.7.2 - September 9, 2019 - (preview release 12)
+		- 4 new functions written
+		- added some missing date, map, and set support
+		- added missing documentation for new utility functions to help file
 */
 
 /*
@@ -653,7 +657,7 @@ UInvObject.prototype = (function () {
 		},
 
 		/* spread: Returns a Map, Set, or String converted to an array.  If the second parameter is an Array, Map, Set, or String, then the two objects are spread and returned as a single array.
-				   If a function is passed as the second parameter, this calls the function with the spread array as parameters and returns that functions value. */
+				   If a function is passed as the second parameter, this calls the function with the spread array as parameters and returns that function's value. */
 		spread : function (Value, Funct) {
 			var arr = [];
 			if (UInv.isArray(Value)) {
@@ -907,134 +911,111 @@ UInvObject.prototype = (function () {
 			}
 		},
 
-		/* isArrayOfArrays: Test an array to see if all the values are arrays.  Returns undefined on error. */
+		/* isArrayOfType: Test an array to see if all the values in the array are of one type. */
+		isArrayOfType : function (Arr, Type) {
+			if (UInv.isArray(Arr)) {
+				var i = 0;
+				if (Arr.length) {
+					var funct;
+					Type = Type.toLowerCase();
+					switch (Type) {
+						case "array":
+							funct = UInv.isArray;
+							break;
+						case "boolean":
+							funct = UInv.isBoolean;
+							break;
+						case "date":
+							funct = UInv.isBoolean;
+							break;
+						case "generic object":
+							funct = UInv.isGenericObject;
+							break;
+						case "integer":
+							funct = UInv.isInteger;
+							break;
+						case "map":
+							funct = UInv.isMap;
+							break;
+						case "number":
+							funct = UInv.isNumber;
+							break;
+						case "object":
+							funct = UInv.isObject;
+							break;
+						case "set":
+							funct = UInv.isSet;
+							break;
+						case "string":
+							funct = UInv.isString;
+							break;
+						default:
+							return undefined;  /* Error: Unknown type */
+					}
+					for (i = 0; i < Arr.length; i++) {
+						if (!funct(Arr[i])) {
+							return false;  /* Array is not all of that type */
+						}
+					}
+					return true;  /* Array is all of that type */
+				}
+				return false;  /* Array is empty */
+			} else {
+				return undefined;  /* Error: Not an array */
+			}
+		},
+
+		/* isArrayOfArrays: Test an array to see if all the values are arrays. */
 		isArrayOfArrays : function (Arr) {
-			if (UInv.isArray(Arr)) {
-				var i = 0;
-				if (Arr.length) {
-					for (i = 0; i < Arr.length; i++) {
-						if (!UInv.isArray(Arr[i])) {
-							return false;  /* Array is not all arrays */
-						}
-					}
-					return true;  /* Array is all arrays */
-				}
-				return false;  /* Array is empty */
-			} else {
-				return undefined;  /* Error: Not an array */
-			}
+			return UInv.isArrayOfType(Arr, "array");
 		},
 
-		/* isArrayOfBooleans: Test an array to see if all the values are booleans.  Returns undefined on error. */
+		/* isArrayOfBooleans: Test an array to see if all the values are booleans. */
 		isArrayOfBooleans : function (Arr) {
-			if (UInv.isArray(Arr)) {
-				var i = 0;
-				if (Arr.length) {
-					for (i = 0; i < Arr.length; i++) {
-						if (!UInv.isBoolean(Arr[i])) {
-							return false;  /* Array is not all booleans */
-						}
-					}
-					return true;  /* Array is all booleans */
-				}
-				return false;  /* Array is empty */
-			} else {
-				return undefined;  /* Error: Not an array */
-			}
+			return UInv.isArrayOfType(Arr, "boolean");
 		},
 
-		/* isArrayOfGenericObjects: Test an array to see if all the values are generic objects.  Returns undefined on error. */
+		/* isArrayOfDates: Test an array to see if all the values are dates. */
+		isArrayOfDates : function (Arr) {
+			return UInv.isArrayOfType(Arr, "date");
+		},
+
+		/* isArrayOfGenericObjects: Test an array to see if all the values are generic objects. */
 		isArrayOfGenericObjects : function (Arr) {
-			if (UInv.isArray(Arr)) {
-				var i = 0;
-				if (Arr.length) {
-					for (i = 0; i < Arr.length; i++) {
-						if (!UInv.isGenericObject(Arr[i])) {
-							return false;  /* Array is not all generic objects */
-						}
-					}
-					return true;  /* Array is all generic objects */
-				}
-				return false;  /* Array is empty */
-			} else {
-				return undefined;  /* Error: Not an array */
-			}
+			return UInv.isArrayOfType(Arr, "generic object");
 		},
 
-		/* isArrayOfIntegers: Test an array to see if all the values are integers.  Returns undefined on error. */
+		/* isArrayOfIntegers: Test an array to see if all the values are integers. */
 		isArrayOfIntegers : function (Arr) {
-			if (UInv.isArray(Arr)) {
-				var i = 0;
-				if (Arr.length) {
-					for (i = 0; i < Arr.length; i++) {
-						if (!UInv.isInteger(Arr[i])) {
-							return false;  /* Array is not all integers */
-						}
-					}
-					return true;  /* Array is all integers */
-				}
-				return false;  /* Array is empty */
-			} else {
-				return undefined;  /* Error: Not an array */
-			}
+			return UInv.isArrayOfType(Arr, "integer");
 		},
 
-		/* isArrayOfNumbers: Test an array to see if all the values are numbers.  Returns undefined on error. */
+		/* isArrayOfMaps: Test an array to see if all the values are maps. */
+		isArrayOfMaps : function (Arr) {
+			return UInv.isArrayOfType(Arr, "map");
+		},
+
+		/* isArrayOfNumbers: Test an array to see if all the values are numbers. */
 		isArrayOfNumbers : function (Arr) {
-			if (UInv.isArray(Arr)) {
-				var i = 0;
-				if (Arr.length) {
-					for (i = 0; i < Arr.length; i++) {
-						if (!UInv.isNumber(Arr[i])) {
-							return false;  /* Array is not all numbers */
-						}
-					}
-					return true;  /* Array is all numbers */
-				}
-				return false;  /* Array is empty */
-			} else {
-				return undefined;  /* Error: Not an array */
-			}
+			return UInv.isArrayOfType(Arr, "number");
 		},
 
-		/* isArrayOfObjects: Test an array to see if all the values are objects.  Returns undefined on error. */
+		/* isArrayOfObjects: Test an array to see if all the values are objects. */
 		isArrayOfObjects : function (Arr) {
-			if (UInv.isArray(Arr)) {
-				var i = 0;
-				if (Arr.length) {
-					for (i = 0; i < Arr.length; i++) {
-						if (!UInv.isObject(Arr[i])) {
-							return false;  /* Array is not all objects */
-						}
-					}
-					return true;  /* Array is all objects */
-				}
-				return false;  /* Array is empty */
-			} else {
-				return undefined;  /* Error: Not an array */
-			}
+			return UInv.isArrayOfType(Arr, "object");
 		},
 
-		/* isArrayOfStrings: Test an array to see if all the values are strings.  Returns undefined on error. */
+		/* isArrayOfSets: Test an array to see if all the values are sets. */
+		isArrayOfSets : function (Arr) {
+			return UInv.isArrayOfType(Arr, "set");
+		},
+
+		/* isArrayOfStrings: Test an array to see if all the values are strings. */
 		isArrayOfStrings : function (Arr) {
-			if (UInv.isArray(Arr)) {
-				var i = 0;
-				if (Arr.length) {
-					for (i = 0; i < Arr.length; i++) {
-						if (!UInv.isString(Arr[i])) {
-							return false;  /* Array is not all strings */
-						}
-					}
-					return true;  /* Array is all strings */
-				}
-				return false;  /* Array is empty */
-			} else {
-				return undefined;  /* Error: Not an array */
-			}
+			return UInv.isArrayOfType(Arr, "string");
 		},
 
 		/* combineGenericObjects: Returns a new object that has the combined properties of Obj1 and Obj2, with Obj2's properties preferred when both objects have matching property names. */
-		/*                        Returns undefined on error. */
 		combineGenericObjects : function (Obj1, Obj2) {
 			if (UInv.isGenericObject(Obj1) && UInv.isGenericObject(Obj2)) {
 				var Result = clone(Obj1), i, Keys = Object.keys(Obj2);
@@ -2344,7 +2325,7 @@ UInvObject.prototype = (function () {
 			}
 		},
 
-		/* GetBagPropertyArray: Return an array of all bag's property names.  Returns undefined on error. */
+		/* GetBagPropertyArray: Return an array of all bag's property names. */
 		GetBagPropertyArray : function (BagName) {
 			if (UInv.isString(BagName)) {
 				BagName = FixBagName(BagName);
@@ -2512,7 +2493,7 @@ UInvObject.prototype = (function () {
 			}
 		},
 
-		/* GetBagPropertyValue: Return a bag's property value.  Returns undefined on error. */
+		/* GetBagPropertyValue: Return a bag's property value. */
 		GetBagPropertyValue : function (BagName, BagPropertyName) {
 			if (UInv.isString(BagName) && UInv.isString(BagPropertyName)) {
 				BagName = FixBagName(BagName);
@@ -6115,7 +6096,6 @@ UInvObject.prototype = (function () {
 		},
 
 		/* GetItemCountByDefaultType: Returns the number of unique item types in each bag (ignores Quantity), items with a default item type of "-" are each counted as separate unique item types. */
-		/*                            Returns undefined on error. */
 		GetItemCountByDefaultType : function (BagName, IgnoreTypes) {
 			var Tot = 0, i = 0;
 			if (UInv.isString(BagName)) {
@@ -6162,7 +6142,7 @@ UInvObject.prototype = (function () {
 			}
 		},
 
-		/* GetItemCountFullByDefaultType: Returns the total number of items in bag(s) (Quantity included) of that DefaultItemType.  Returns undefined on error. */
+		/* GetItemCountFullByDefaultType: Returns the total number of items in bag(s) (Quantity included) of that DefaultItemType. */
 		GetItemCountFullByDefaultType : function (BagName, DefaultItemType) {
 			if (UInv.isString(DefaultItemType)) {
 				var Tot = 0, i = 0;
@@ -7616,7 +7596,7 @@ UInvObject.prototype = (function () {
 		},
 
 		/* GetItemPropertyValueObject: Returns an object in the format { ItemName : ItemPropertyName's value, ... } for each item in BagName that has the property ItemPropertyName. */
-		/*                             Items that don't have ItemPropertyName are ignored.  Returns undefined on error. */
+		/*                             Items that don't have ItemPropertyName are ignored. */
 		GetItemPropertyValueObject : function (BagName, ItemPropertyName) {
 			if (UInv.isString(BagName) && UInv.isString(ItemPropertyName)) {
 				BagName = FixBagName(BagName);
@@ -7646,7 +7626,7 @@ UInvObject.prototype = (function () {
 
 		/* GetItemsArraySortedByProperty: Returns an array of item names in BagName, sorted by the value in ItemPropertyName (subsorted by ItemName), or by ItemName if ItemPropertyName isn't set. */
 		/*         The array is sorted by number or boolean if all item property values are of that type, otherwise it converts non-strings to strings and does a lowercase comparison. */
-		/*         Items that don't have ItemPropertyName are ignored.  Returns undefined on error. */
+		/*         Items that don't have ItemPropertyName are ignored. */
 		GetItemsArraySortedByProperty : function (BagName, ItemPropertyName) {
 			if (UInv.isString(BagName)) {
 				BagName = FixBagName(BagName);
@@ -11932,7 +11912,7 @@ UInvObject.prototype = (function () {
 
 		/* Version: Return a string showing the version of UInv. */
 		Version : function () {
-			return "Universal Inventory System (<a href='https://github.com/HiEv/UInv'>UInv</a>) v0.9.7.1 by HiEv";  /* Success */
+			return "Universal Inventory System (<a href='https://github.com/HiEv/UInv'>UInv</a>) v0.9.7.2 by HiEv";  /* Success */
 		},
 
 
@@ -12403,27 +12383,27 @@ UInvObject.prototype = (function () {
 			};
 		})(),
 
-		/* OPTIONAL: You can list the names of your default bags here so
-		             you can find them by searching "UInv.BagList[index]". */
+/* OPTIONAL: You can list the names of your default bags here so
+             you can find them by searching "UInv.BagList[index]". */
 		BagList: ["backpack", "clothes", "treasure bag", "treasures", "suit pocket"],
 
-		/* OPTIONAL: You can list the names of your default items here so
-		             you can find them by searching "UInv.ItemList[index]". */
+/* OPTIONAL: You can list the names of your default items here so
+             you can find them by searching "UInv.ItemList[index]". */
 		ItemList: ["backpack", "belt", "bow", "dagger", "gold coin", "heavy mace", "pants", "rainbow potion", "shoes", "shortsword", "suit"]
 	};
 })();
 window.UInv = new UInvObject();  /* Create the UInv object */
 
 /* NOTE:
-   It's recommended that you pass "UInv.Initialize" (below) the value of
-   "UInv.ERROR_THROW_ERROR" and/or "UInv.ERROR_TO_CONSOLE" when testing your
-   code.
+   It's recommended that you pass "UInv.Initialize" (below) the value
+	 of "UInv.ERROR_THROW_ERROR" and/or "UInv.ERROR_TO_CONSOLE" when
+	 testing your code.
 */
 UInv.Initialize(UInv.ERROR_NONE);  /* Readies UInv variables and events */
 
 /* Uncomment the line following this comment (remove the leading "// ")
-   and set it to something else if you prefer a different manner of dealing
-   with item collisions.
+   and set it to something else if you prefer a different manner of
+	 dealing with item collisions.
 */
 // UInv.SetMergeItemMethod(UInv.MERGE_USE_ONLY_DESTINATION_PROPERTIES);
 

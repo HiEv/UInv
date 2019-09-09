@@ -2453,7 +2453,7 @@ $(document).on("click", function (ev) {
 
 /*
 	Universal Inventory System (UInv)
-	by HiEv                    v0.9.7.1 (bugfix)
+	by HiEv                    v0.9.7.2
 
 	A JavaScript inventory "plugin" for Twine 2 / SugarCube 2.
 
@@ -2592,6 +2592,10 @@ $(document).on("click", function (ev) {
 		- added another bit of sample code to the UInv_Sample_Code.html file
 		- another update to the "UInv Safe Save Code" in the UInv help file
 		- numerous help file updates and fixes
+	v0.9.7.2 - September 9, 2019 - (preview release 12)
+		- 4 new functions written
+		- added some missing date, map, and set support
+		- added missing documentation for new utility functions to help file
 */
 
 /*
@@ -3106,7 +3110,7 @@ UInvObject.prototype = (function () {
 		},
 
 		/* spread: Returns a Map, Set, or String converted to an array.  If the second parameter is an Array, Map, Set, or String, then the two objects are spread and returned as a single array.
-				   If a function is passed as the second parameter, this calls the function with the spread array as parameters and returns that functions value. */
+				   If a function is passed as the second parameter, this calls the function with the spread array as parameters and returns that function's value. */
 		spread : function (Value, Funct) {
 			var arr = [];
 			if (UInv.isArray(Value)) {
@@ -3360,134 +3364,111 @@ UInvObject.prototype = (function () {
 			}
 		},
 
-		/* isArrayOfArrays: Test an array to see if all the values are arrays.  Returns undefined on error. */
+		/* isArrayOfType: Test an array to see if all the values in the array are of one type. */
+		isArrayOfType : function (Arr, Type) {
+			if (UInv.isArray(Arr)) {
+				var i = 0;
+				if (Arr.length) {
+					var funct;
+					Type = Type.toLowerCase();
+					switch (Type) {
+						case "array":
+							funct = UInv.isArray;
+							break;
+						case "boolean":
+							funct = UInv.isBoolean;
+							break;
+						case "date":
+							funct = UInv.isBoolean;
+							break;
+						case "generic object":
+							funct = UInv.isGenericObject;
+							break;
+						case "integer":
+							funct = UInv.isInteger;
+							break;
+						case "map":
+							funct = UInv.isMap;
+							break;
+						case "number":
+							funct = UInv.isNumber;
+							break;
+						case "object":
+							funct = UInv.isObject;
+							break;
+						case "set":
+							funct = UInv.isSet;
+							break;
+						case "string":
+							funct = UInv.isString;
+							break;
+						default:
+							return undefined;  /* Error: Unknown type */
+					}
+					for (i = 0; i < Arr.length; i++) {
+						if (!funct(Arr[i])) {
+							return false;  /* Array is not all of that type */
+						}
+					}
+					return true;  /* Array is all of that type */
+				}
+				return false;  /* Array is empty */
+			} else {
+				return undefined;  /* Error: Not an array */
+			}
+		},
+
+		/* isArrayOfArrays: Test an array to see if all the values are arrays. */
 		isArrayOfArrays : function (Arr) {
-			if (UInv.isArray(Arr)) {
-				var i = 0;
-				if (Arr.length) {
-					for (i = 0; i < Arr.length; i++) {
-						if (!UInv.isArray(Arr[i])) {
-							return false;  /* Array is not all arrays */
-						}
-					}
-					return true;  /* Array is all arrays */
-				}
-				return false;  /* Array is empty */
-			} else {
-				return undefined;  /* Error: Not an array */
-			}
+			return UInv.isArrayOfType(Arr, "array");
 		},
 
-		/* isArrayOfBooleans: Test an array to see if all the values are booleans.  Returns undefined on error. */
+		/* isArrayOfBooleans: Test an array to see if all the values are booleans. */
 		isArrayOfBooleans : function (Arr) {
-			if (UInv.isArray(Arr)) {
-				var i = 0;
-				if (Arr.length) {
-					for (i = 0; i < Arr.length; i++) {
-						if (!UInv.isBoolean(Arr[i])) {
-							return false;  /* Array is not all booleans */
-						}
-					}
-					return true;  /* Array is all booleans */
-				}
-				return false;  /* Array is empty */
-			} else {
-				return undefined;  /* Error: Not an array */
-			}
+			return UInv.isArrayOfType(Arr, "boolean");
 		},
 
-		/* isArrayOfGenericObjects: Test an array to see if all the values are generic objects.  Returns undefined on error. */
+		/* isArrayOfDates: Test an array to see if all the values are dates. */
+		isArrayOfDates : function (Arr) {
+			return UInv.isArrayOfType(Arr, "date");
+		},
+
+		/* isArrayOfGenericObjects: Test an array to see if all the values are generic objects. */
 		isArrayOfGenericObjects : function (Arr) {
-			if (UInv.isArray(Arr)) {
-				var i = 0;
-				if (Arr.length) {
-					for (i = 0; i < Arr.length; i++) {
-						if (!UInv.isGenericObject(Arr[i])) {
-							return false;  /* Array is not all generic objects */
-						}
-					}
-					return true;  /* Array is all generic objects */
-				}
-				return false;  /* Array is empty */
-			} else {
-				return undefined;  /* Error: Not an array */
-			}
+			return UInv.isArrayOfType(Arr, "generic object");
 		},
 
-		/* isArrayOfIntegers: Test an array to see if all the values are integers.  Returns undefined on error. */
+		/* isArrayOfIntegers: Test an array to see if all the values are integers. */
 		isArrayOfIntegers : function (Arr) {
-			if (UInv.isArray(Arr)) {
-				var i = 0;
-				if (Arr.length) {
-					for (i = 0; i < Arr.length; i++) {
-						if (!UInv.isInteger(Arr[i])) {
-							return false;  /* Array is not all integers */
-						}
-					}
-					return true;  /* Array is all integers */
-				}
-				return false;  /* Array is empty */
-			} else {
-				return undefined;  /* Error: Not an array */
-			}
+			return UInv.isArrayOfType(Arr, "integer");
 		},
 
-		/* isArrayOfNumbers: Test an array to see if all the values are numbers.  Returns undefined on error. */
+		/* isArrayOfMaps: Test an array to see if all the values are maps. */
+		isArrayOfMaps : function (Arr) {
+			return UInv.isArrayOfType(Arr, "map");
+		},
+
+		/* isArrayOfNumbers: Test an array to see if all the values are numbers. */
 		isArrayOfNumbers : function (Arr) {
-			if (UInv.isArray(Arr)) {
-				var i = 0;
-				if (Arr.length) {
-					for (i = 0; i < Arr.length; i++) {
-						if (!UInv.isNumber(Arr[i])) {
-							return false;  /* Array is not all numbers */
-						}
-					}
-					return true;  /* Array is all numbers */
-				}
-				return false;  /* Array is empty */
-			} else {
-				return undefined;  /* Error: Not an array */
-			}
+			return UInv.isArrayOfType(Arr, "number");
 		},
 
-		/* isArrayOfObjects: Test an array to see if all the values are objects.  Returns undefined on error. */
+		/* isArrayOfObjects: Test an array to see if all the values are objects. */
 		isArrayOfObjects : function (Arr) {
-			if (UInv.isArray(Arr)) {
-				var i = 0;
-				if (Arr.length) {
-					for (i = 0; i < Arr.length; i++) {
-						if (!UInv.isObject(Arr[i])) {
-							return false;  /* Array is not all objects */
-						}
-					}
-					return true;  /* Array is all objects */
-				}
-				return false;  /* Array is empty */
-			} else {
-				return undefined;  /* Error: Not an array */
-			}
+			return UInv.isArrayOfType(Arr, "object");
 		},
 
-		/* isArrayOfStrings: Test an array to see if all the values are strings.  Returns undefined on error. */
+		/* isArrayOfSets: Test an array to see if all the values are sets. */
+		isArrayOfSets : function (Arr) {
+			return UInv.isArrayOfType(Arr, "set");
+		},
+
+		/* isArrayOfStrings: Test an array to see if all the values are strings. */
 		isArrayOfStrings : function (Arr) {
-			if (UInv.isArray(Arr)) {
-				var i = 0;
-				if (Arr.length) {
-					for (i = 0; i < Arr.length; i++) {
-						if (!UInv.isString(Arr[i])) {
-							return false;  /* Array is not all strings */
-						}
-					}
-					return true;  /* Array is all strings */
-				}
-				return false;  /* Array is empty */
-			} else {
-				return undefined;  /* Error: Not an array */
-			}
+			return UInv.isArrayOfType(Arr, "string");
 		},
 
 		/* combineGenericObjects: Returns a new object that has the combined properties of Obj1 and Obj2, with Obj2's properties preferred when both objects have matching property names. */
-		/*                        Returns undefined on error. */
 		combineGenericObjects : function (Obj1, Obj2) {
 			if (UInv.isGenericObject(Obj1) && UInv.isGenericObject(Obj2)) {
 				var Result = clone(Obj1), i, Keys = Object.keys(Obj2);
@@ -4797,7 +4778,7 @@ UInvObject.prototype = (function () {
 			}
 		},
 
-		/* GetBagPropertyArray: Return an array of all bag's property names.  Returns undefined on error. */
+		/* GetBagPropertyArray: Return an array of all bag's property names. */
 		GetBagPropertyArray : function (BagName) {
 			if (UInv.isString(BagName)) {
 				BagName = FixBagName(BagName);
@@ -4965,7 +4946,7 @@ UInvObject.prototype = (function () {
 			}
 		},
 
-		/* GetBagPropertyValue: Return a bag's property value.  Returns undefined on error. */
+		/* GetBagPropertyValue: Return a bag's property value. */
 		GetBagPropertyValue : function (BagName, BagPropertyName) {
 			if (UInv.isString(BagName) && UInv.isString(BagPropertyName)) {
 				BagName = FixBagName(BagName);
@@ -8568,7 +8549,6 @@ UInvObject.prototype = (function () {
 		},
 
 		/* GetItemCountByDefaultType: Returns the number of unique item types in each bag (ignores Quantity), items with a default item type of "-" are each counted as separate unique item types. */
-		/*                            Returns undefined on error. */
 		GetItemCountByDefaultType : function (BagName, IgnoreTypes) {
 			var Tot = 0, i = 0;
 			if (UInv.isString(BagName)) {
@@ -8615,7 +8595,7 @@ UInvObject.prototype = (function () {
 			}
 		},
 
-		/* GetItemCountFullByDefaultType: Returns the total number of items in bag(s) (Quantity included) of that DefaultItemType.  Returns undefined on error. */
+		/* GetItemCountFullByDefaultType: Returns the total number of items in bag(s) (Quantity included) of that DefaultItemType. */
 		GetItemCountFullByDefaultType : function (BagName, DefaultItemType) {
 			if (UInv.isString(DefaultItemType)) {
 				var Tot = 0, i = 0;
@@ -10069,7 +10049,7 @@ UInvObject.prototype = (function () {
 		},
 
 		/* GetItemPropertyValueObject: Returns an object in the format { ItemName : ItemPropertyName's value, ... } for each item in BagName that has the property ItemPropertyName. */
-		/*                             Items that don't have ItemPropertyName are ignored.  Returns undefined on error. */
+		/*                             Items that don't have ItemPropertyName are ignored. */
 		GetItemPropertyValueObject : function (BagName, ItemPropertyName) {
 			if (UInv.isString(BagName) && UInv.isString(ItemPropertyName)) {
 				BagName = FixBagName(BagName);
@@ -10099,7 +10079,7 @@ UInvObject.prototype = (function () {
 
 		/* GetItemsArraySortedByProperty: Returns an array of item names in BagName, sorted by the value in ItemPropertyName (subsorted by ItemName), or by ItemName if ItemPropertyName isn't set. */
 		/*         The array is sorted by number or boolean if all item property values are of that type, otherwise it converts non-strings to strings and does a lowercase comparison. */
-		/*         Items that don't have ItemPropertyName are ignored.  Returns undefined on error. */
+		/*         Items that don't have ItemPropertyName are ignored. */
 		GetItemsArraySortedByProperty : function (BagName, ItemPropertyName) {
 			if (UInv.isString(BagName)) {
 				BagName = FixBagName(BagName);
@@ -14385,7 +14365,7 @@ UInvObject.prototype = (function () {
 
 		/* Version: Return a string showing the version of UInv. */
 		Version : function () {
-			return "Universal Inventory System (<a href='https://github.com/HiEv/UInv'>UInv</a>) v0.9.7.1 by HiEv";  /* Success */
+			return "Universal Inventory System (<a href='https://github.com/HiEv/UInv'>UInv</a>) v0.9.7.2 by HiEv";  /* Success */
 		},
 
 
@@ -14856,27 +14836,27 @@ UInvObject.prototype = (function () {
 			};
 		})(),
 
-		/* OPTIONAL: You can list the names of your default bags here so
-		             you can find them by searching "UInv.BagList[index]". */
+/* OPTIONAL: You can list the names of your default bags here so
+             you can find them by searching "UInv.BagList[index]". */
 		BagList: ["backpack", "clothes", "treasure bag", "treasures", "suit pocket"],
 
-		/* OPTIONAL: You can list the names of your default items here so
-		             you can find them by searching "UInv.ItemList[index]". */
+/* OPTIONAL: You can list the names of your default items here so
+             you can find them by searching "UInv.ItemList[index]". */
 		ItemList: ["backpack", "belt", "bow", "dagger", "gold coin", "heavy mace", "pants", "rainbow potion", "shoes", "shortsword", "suit"]
 	};
 })();
 window.UInv = new UInvObject();  /* Create the UInv object */
 
 /* NOTE:
-   It's recommended that you pass "UInv.Initialize" (below) the value of
-   "UInv.ERROR_THROW_ERROR" and/or "UInv.ERROR_TO_CONSOLE" when testing your
-   code.
+   It's recommended that you pass "UInv.Initialize" (below) the value
+	 of "UInv.ERROR_THROW_ERROR" and/or "UInv.ERROR_TO_CONSOLE" when
+	 testing your code.
 */
 UInv.Initialize(UInv.ERROR_NONE);  /* Readies UInv variables and events */
 
 /* Uncomment the line following this comment (remove the leading "// ")
-   and set it to something else if you prefer a different manner of dealing
-   with item collisions.
+   and set it to something else if you prefer a different manner of
+	 dealing with item collisions.
 */
 // UInv.SetMergeItemMethod(UInv.MERGE_USE_ONLY_DESTINATION_PROPERTIES);
 
@@ -15173,7 +15153,7 @@ This is the help file for the Universal Inventory System (or &quot;UInv&quot; fo
 	&lt;li&gt;[[UInvSet Macro]]&lt;/li&gt;
 	&lt;li&gt;[[UInvTry Macro]]&lt;/li&gt;
   &lt;/ul&gt;&lt;/div&gt;
-  &lt;h3&gt;[[UInv Utility Functions]]: (59 functions, 1 left to complete)&lt;/h3&gt;
+  &lt;h3&gt;[[UInv Utility Functions]]: (63 functions, 1 left to complete)&lt;/h3&gt;
   &lt;div&gt;&lt;ul&gt;
   	&lt;li&gt;[[addArticle]]&lt;/li&gt;
 	&lt;li&gt;[[arrayObjectIncludes]]&lt;/li&gt;
@@ -15196,25 +15176,35 @@ This is the help file for the Universal Inventory System (or &quot;UInv&quot; fo
 	&lt;li&gt;[[isArray]]&lt;/li&gt;
 	&lt;li&gt;[[isArrayOfArrays]]&lt;/li&gt;
 	&lt;li&gt;[[isArrayOfBooleans]]&lt;/li&gt;
+	&lt;li&gt;[[isArrayOfDates]]&lt;/li&gt;
 	&lt;li&gt;[[isArrayOfGenericObjects]]&lt;/li&gt;
 	&lt;li&gt;[[isArrayOfIntegers]]&lt;/li&gt;
+	&lt;li&gt;[[isArrayOfMaps]]&lt;/li&gt;
 	&lt;li&gt;[[isArrayOfNumbers]]&lt;/li&gt;
 	&lt;li&gt;[[isArrayOfObjects]]&lt;/li&gt;
+	&lt;li&gt;[[isArrayOfSets]]&lt;/li&gt;
 	&lt;li&gt;[[isArrayOfStrings]]&lt;/li&gt;
+	&lt;li&gt;[[isArrayOfType]]&lt;/li&gt;
 	&lt;li&gt;[[isBoolean]]&lt;/li&gt;
 	&lt;li&gt;[[isDate]]&lt;/li&gt;
 	&lt;li&gt;[[isFunction]]&lt;/li&gt;
 	&lt;li&gt;[[isGenericObject]]&lt;/li&gt;
 	&lt;li&gt;[[isInteger]]&lt;/li&gt;
+	&lt;li&gt;[[isMap]]&lt;/li&gt;
 	&lt;li&gt;[[isNumber]]&lt;/li&gt;
 	&lt;li&gt;[[isObject]]&lt;/li&gt;
 	&lt;li&gt;[[isProperty]]&lt;/li&gt;
 	&lt;li&gt;[[isRegExp]]&lt;/li&gt;
+	&lt;li&gt;[[isSet]]&lt;/li&gt;
 	&lt;li&gt;[[isString]]&lt;/li&gt;
 	&lt;li&gt;[[isUndefined]]&lt;/li&gt;
+	&lt;li&gt;[[mapsAreEqual]]&lt;/li&gt;
 	&lt;li&gt;[[numberToAPString]]&lt;/li&gt;
 	&lt;li&gt;[[objectsAreEqual]]&lt;/li&gt;
 	&lt;li&gt;sanitizeString&lt;/li&gt;
+	&lt;li&gt;[[setsAreEqual]]&lt;/li&gt;
+	&lt;li&gt;[[setsMatch]]&lt;/li&gt;
+	&lt;li&gt;[[spread]]&lt;/li&gt;
 	&lt;li&gt;[[valuesAreEqual]]&lt;/li&gt;
 	&lt;li&gt;[[Engine Detection]] (12 functions)&lt;/li&gt;
   &lt;/ul&gt;&lt;/div&gt;
@@ -16360,24 +16350,35 @@ Your backpack contains a dagger, two pairs of pants, and 20 gold coins.
 - [[isArray]](Value)
 - [[isArrayOfArrays]](Value)
 - [[isArrayOfBooleans]](Value)
+- [[isArrayOfDates]](Value)
 - [[isArrayOfGenericObjects]](Value)
 - [[isArrayOfIntegers]](Value)
+- [[isArrayOfMaps]](Value)
 - [[isArrayOfNumbers]](Value)
 - [[isArrayOfObjects]](Value)
+- [[isArrayOfSets]](Value)
 - [[isArrayOfStrings]](Value)
+- [[isArrayOfType]](Array, Type)
 - [[isBoolean]](Value)
 - [[isDate]](Value)
 - [[isFunction]](Value)
 - [[isGenericObject]](Value)
 - [[isInteger]](Value)
+- [[isMap]](Value)
 - [[isNumber]](Value)
 - [[isObject]](Value)
 - [[isProperty]](Obj, Prop)
 - [[isRegExp]](Value)
+- [[isSet]](Value)
 - [[isString]](Value)
 - [[isUndefined]](Value)
+- [[mapsAreEqual]](Map1, Map2)
 - [[numberToAPString]](Value)
 - [[objectsAreEqual]](Object1, Object2, [ArrayOfObjectsToIgnore])
+- sanitizeString(String)
+- [[setsAreEqual]](Set1, Set2)
+- [[setsMatch]](Set1, Set2)
+- [[spread]](Value, Funct)
 - [[valuesAreEqual]](Var1, Var2)
 + [[Engine Detection]] (12 functions)</tw-passagedata><tw-passagedata pid="139" name="ClearErrors" tags="" position="3875,150" size="100,100">&#39;&#39;ClearErrors()&#39;&#39; Clears error message string.
 
@@ -16521,39 +16522,39 @@ Returns if a value is an array.
 
 </tw-passagedata><tw-passagedata pid="150" name="isArrayOfBooleans" tags="" position="4300,150" size="100,100">&#39;&#39;isArrayOfBooleans(Value)&#39;&#39; = t/f
 
-Test an array to see if all the values are booleans.  Returns {{{undefined}}} on error.
+Test an array to see if all the values are booleans.  Returns {{{undefined}}} if &#39;&#39;Value&#39;&#39; is not an array.
 
-</tw-passagedata><tw-passagedata pid="151" name="isArrayOfNumbers" tags="" position="4300,525" size="100,100">&#39;&#39;isArrayOfNumbers(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="151" name="isArrayOfNumbers" tags="" position="4300,775" size="100,100">&#39;&#39;isArrayOfNumbers(Value)&#39;&#39; = t/f
 
-Test an array to see if all the values are numbers.  Returns {{{undefined}}} on error.
+Test an array to see if all the values are numbers.  Returns {{{undefined}}} if &#39;&#39;Value&#39;&#39; is not an array.
 
-</tw-passagedata><tw-passagedata pid="152" name="isArrayOfStrings" tags="" position="4300,775" size="100,100">&#39;&#39;isArrayOfStrings(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="152" name="isArrayOfStrings" tags="" position="4300,1150" size="100,100">&#39;&#39;isArrayOfStrings(Value)&#39;&#39; = t/f
 
-Test an array to see if all the values are strings.  Returns {{{undefined}}} on error.
+Test an array to see if all the values are strings.  Returns {{{undefined}}} if &#39;&#39;Value&#39;&#39; is not an array.
 
-</tw-passagedata><tw-passagedata pid="153" name="isBoolean" tags="" position="4300,900" size="100,100">&#39;&#39;isBoolean(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="153" name="isBoolean" tags="" position="4425,150" size="100,100">&#39;&#39;isBoolean(Value)&#39;&#39; = t/f
 
 Returns if a value is a boolean.
 
-</tw-passagedata><tw-passagedata pid="154" name="isNumber" tags="" position="4425,275" size="100,100">&#39;&#39;isNumber(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="154" name="isNumber" tags="" position="4425,900" size="100,100">&#39;&#39;isNumber(Value)&#39;&#39; = t/f
 
 Returns if a value is a number.
 
-</tw-passagedata><tw-passagedata pid="155" name="isObject" tags="" position="4425,400" size="100,100">&#39;&#39;isObject(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="155" name="isObject" tags="" position="4425,1025" size="100,100">&#39;&#39;isObject(Value)&#39;&#39; = t/f
 
 Returns if a value is an object.
 
 &#39;&#39;Note:&#39;&#39; Arrays are a type of object.  If you don&#39;t want to include other objects, such as arrays, use [[isGenericObject]] instead.
 
-</tw-passagedata><tw-passagedata pid="156" name="isString" tags="" position="4425,775" size="100,100">&#39;&#39;isString(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="156" name="isString" tags="" position="4550,150" size="100,100">&#39;&#39;isString(Value)&#39;&#39; = t/f
 
 Returns if a value is a string.
 
-</tw-passagedata><tw-passagedata pid="157" name="isUndefined" tags="" position="4425,900" size="100,100">&#39;&#39;isUndefined(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="157" name="isUndefined" tags="" position="4550,275" size="100,100">&#39;&#39;isUndefined(Value)&#39;&#39; = t/f
 
 Returns if a value is {{{undefined}}}.
 
-</tw-passagedata><tw-passagedata pid="158" name="numberToAPString" tags="" position="4425,1025" size="100,100">&#39;&#39;numberToAPString(Value)&#39;&#39; = returns the number as an AP style formatted string
+</tw-passagedata><tw-passagedata pid="158" name="numberToAPString" tags="" position="4550,525" size="100,100">&#39;&#39;numberToAPString(Value)&#39;&#39; = returns the number as an AP style formatted string
 
 Converts a number to a string that conforms to basic AP writing style guidelines.
 
@@ -16569,13 +16570,13 @@ For exceptions and details see: [[https://writingexplained.org/ap-style/ap-style
 
 See also: [[integerToOrdinal]] for changing integers like 1 or 101 into &quot;first&quot; or &quot;101st&quot;, respectively.
 
-</tw-passagedata><tw-passagedata pid="159" name="objectsAreEqual" tags="" position="4425,1150" size="100,100">&#39;&#39;objectsAreEqual(Object1, Object2)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="159" name="objectsAreEqual" tags="" position="4550,650" size="100,100">&#39;&#39;objectsAreEqual(Object1, Object2)&#39;&#39; = t/f
 
 Check two objects to see if they&#39;re identical.
 
 Returns {{{false}}} if either parameter passed is not an object.
 
-</tw-passagedata><tw-passagedata pid="160" name="valuesAreEqual" tags="" position="4425,1275" size="100,100">&#39;&#39;valuesAreEqual(Var1, Var2)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="160" name="valuesAreEqual" tags="" position="4550,1275" size="100,100">&#39;&#39;valuesAreEqual(Var1, Var2)&#39;&#39; = t/f
 
 Check two variables to see if they&#39;re identical.  This function only supports comparing strings, numbers, booleans, {{{undefined}}}, {{{null}}}, arrays, dates, and/or generic objects.
 
@@ -16597,7 +16598,7 @@ You will likely never need to use this function.
 
 However, you may want to use it if you edit an item&#39;s type to the point where it more closely resembles another item&#39;s type.  In this case, switching its type to that other item type will reduce the amount of data Twine has to save in your story&#39;s history.
 
-</tw-passagedata><tw-passagedata pid="163" name="isProperty" tags="" position="4425,525" size="100,100">&#39;&#39;isProperty(Obj, Prop)&#39;&#39;
+</tw-passagedata><tw-passagedata pid="163" name="isProperty" tags="" position="4425,1150" size="100,100">&#39;&#39;isProperty(Obj, Prop)&#39;&#39;
 
 Returns if Prop is a property of the object Obj.  The Prop parameter should be passed in the form of a string.
 
@@ -16849,15 +16850,15 @@ Returns whether bag exactly matches its default version, or {{{undefined}}} on e
 
 Returns an array of unique (string, number, and boolean) values for all items with ItemPropertyName in all bags in BagName/Array, or {{{undefined}}} on error.  (use GetUniqueItemTagsArray instead for properties which have array values)
 
-</tw-passagedata><tw-passagedata pid="187" name="isDate" tags="" position="4300,1025" size="100,100">&#39;&#39;isDate(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="187" name="isDate" tags="" position="4425,275" size="100,100">&#39;&#39;isDate(Value)&#39;&#39; = t/f
 
 Returns if a value is a date.
 
-</tw-passagedata><tw-passagedata pid="188" name="isFunction" tags="" position="4300,1150" size="100,100">&#39;&#39;isFunction(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="188" name="isFunction" tags="" position="4425,400" size="100,100">&#39;&#39;isFunction(Value)&#39;&#39; = t/f
 
 Returns if a value is a function.
 
-</tw-passagedata><tw-passagedata pid="189" name="isRegExp" tags="" position="4425,650" size="100,100">&#39;&#39;isRegExp(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="189" name="isRegExp" tags="" position="4425,1275" size="100,100">&#39;&#39;isRegExp(Value)&#39;&#39; = t/f
 
 Returns if a value is a RegExp.
 
@@ -16904,7 +16905,7 @@ Gets the current bag name if there is one, otherwise returns &quot;&quot;.
 
 Swaps two items, optionally keeps certain item properties un-swapped.  Returns true on success or {{{undefined}}} on error.
 
-</tw-passagedata><tw-passagedata pid="195" name="isInteger" tags="" position="4425,150" size="100,100">&#39;&#39;isInteger(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="195" name="isInteger" tags="" position="4425,650" size="100,100">&#39;&#39;isInteger(Value)&#39;&#39; = t/f
 
 Returns if a value is an integer.
 
@@ -17532,7 +17533,7 @@ To prevent automatic display updates you should use a pair of [[IncrementUpdateL
 
 See also: [[FixTableCells]] and [[WasTouched]]
 
-</tw-passagedata><tw-passagedata pid="222" name="isGenericObject" tags="" position="4300,1275" size="100,100">&#39;&#39;isGenericObject(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="222" name="isGenericObject" tags="" position="4425,525" size="100,100">&#39;&#39;isGenericObject(Value)&#39;&#39; = t/f
 
 Returns if a value is a generic object.
 
@@ -17699,25 +17700,26 @@ If document has CSS element &quot;CSSElement&quot; (e.g. &quot;.xyz:hover&quot;)
 
 </tw-passagedata><tw-passagedata pid="234" name="isArrayOfArrays" tags="" position="4175,1275" size="100,100">&#39;&#39;isArrayOfArrays(Value)&#39;&#39; = t/f
 
-Test an array to see if all the values are arrays.  Returns {{{undefined}}} on error.
+Test an array to see if all the values are arrays.  Returns {{{undefined}}} if &#39;&#39;Value&#39;&#39; is not an array.
 
-</tw-passagedata><tw-passagedata pid="235" name="isArrayOfGenericObjects" tags="" position="4300,275" size="100,100">&#39;&#39;isArrayOfGenericObjects(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="235" name="isArrayOfGenericObjects" tags="" position="4300,400" size="100,100">&#39;&#39;isArrayOfGenericObjects(Value)&#39;&#39; = t/f
 
-Test an array to see if all the values are generic objects.  Returns {{{undefined}}} on error.
+Test an array to see if all the values are generic objects.  Returns {{{undefined}}} if &#39;&#39;Value&#39;&#39; is not an array.
 
-</tw-passagedata><tw-passagedata pid="236" name="isArrayOfIntegers" tags="" position="4300,400" size="100,100">&#39;&#39;isArrayOfIntegers(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="236" name="isArrayOfIntegers" tags="" position="4300,525" size="100,100">&#39;&#39;isArrayOfIntegers(Value)&#39;&#39; = t/f
 
-Test an array to see if all the values are integers.  Returns {{{undefined}}} on error.
+Test an array to see if all the values are integers.  Returns {{{undefined}}} if &#39;&#39;Value&#39;&#39; is not an array.
 
-</tw-passagedata><tw-passagedata pid="237" name="isArrayOfObjects" tags="" position="4300,650" size="100,100">&#39;&#39;isArrayOfObjects(Value)&#39;&#39; = t/f
+</tw-passagedata><tw-passagedata pid="237" name="isArrayOfObjects" tags="" position="4300,900" size="100,100">&#39;&#39;isArrayOfObjects(Value)&#39;&#39; = t/f
 
-Test an array to see if all the values are objects.  Returns {{{undefined}}} on error.
+Test an array to see if all the values are objects.  Returns {{{undefined}}} if &#39;&#39;Value&#39;&#39; is not an array.
 
 &#39;&#39;Note:&#39;&#39; &quot;Objects&quot; includes not just generic objects, but also arrays, Date objects, Map objects, Set objects, and basically anything else declared using the &quot;new ObjectName()&quot; format.
 
-If you want to test for an array of generic objects, use [[isArrayOfGenericObjects]] instead.
+If you want to test for an array of //generic// objects, use [[isArrayOfGenericObjects]] instead.
 
-If you want to test for an array of arrays, use [[isArrayOfArrays]] instead.
+See also: [[isArrayOfArrays]], [[isArrayOfDates]], [[isArrayOfMaps]], [[isArrayOfSets]]
+
 
 </tw-passagedata><tw-passagedata pid="238" name="IncrementUpdateLock" tags="" position="3700,400" size="100,100">&#39;&#39;IncrementUpdateLock()&#39;&#39;
 
@@ -17819,6 +17821,9 @@ All events:
 
 &quot;table&quot; events:
 ---------------
+
+IMPORTANT: Table drag-drop events require the inclusion of jQuery UI.
+           See the UInv sample code which demonstrates how to do this.
 
  - Accept (sends element to be dropped)
    NOTE: The table Accept event gets called many times during drag-and-drop actions.
@@ -18255,6 +18260,11 @@ The &#39;&#39;Options&#39;&#39; parameter is optional.  If used it changes the d
 * &quot;&#39;&#39;UseSuperscript&#39;&#39;&quot; = This displays the suffix as a superscript, instead of as normal text (e.g. instead of returning a value of &#39;&#39;11&#39;&#39; as &quot;&#39;&#39;11th&#39;&#39;&quot;, it will return it as &quot;&#39;&#39;11&lt;sup&gt;th&lt;/sup&gt;&#39;&#39;&quot; {{{11&lt;sup&gt;th&lt;/sup&gt;}}}).  This option will not affect ordinal text (i.e. &quot;first&quot; will remain &quot;first&quot;, etc...).
 
 </tw-passagedata><tw-passagedata pid="277" name="Changelog" tags="Unfinished" position="325,175" size="100,100">&lt;center&gt;&lt;h2&gt;Universal Inventory System Changelog&lt;/h2&gt;for &lt;&lt;=UInv.Version()&gt;&gt;&lt;/center&gt;
+&#39;&#39;v0.9.7.2&#39;&#39; - September 9, 2019 - (preview release 12)
+* 4 new functions written
+* added some missing date, map, and set support
+* added missing documentation for new utility functions to help file
+
 &#39;&#39;v0.9.7.1&#39;&#39; (bugfix) - September 7, 2019 - (preview release 11)
 * 7 new functions written + 5 new functions planned
 * added support for Set and Map objects; UInv now supports all of SugarCube&#39;s supported types
@@ -18739,24 +18749,35 @@ If you want to access a pocket directly, instead of using this function, just us
 	&lt;li&gt;[[isArray]](Value)&lt;/li&gt;
 	&lt;li&gt;[[isArrayOfArrays]](Value)&lt;/li&gt;
 	&lt;li&gt;[[isArrayOfBooleans]](Value)&lt;/li&gt;
+	&lt;li&gt;[[isArrayOfDates]](Value)&lt;/li&gt;
 	&lt;li&gt;[[isArrayOfGenericObjects]](Value)&lt;/li&gt;
 	&lt;li&gt;[[isArrayOfIntegers]](Value)&lt;/li&gt;
+	&lt;li&gt;[[isArrayOfMaps]](Value)&lt;/li&gt;
 	&lt;li&gt;[[isArrayOfNumbers]](Value)&lt;/li&gt;
 	&lt;li&gt;[[isArrayOfObjects]](Value)&lt;/li&gt;
+	&lt;li&gt;[[isArrayOfSets]](Value)&lt;/li&gt;
 	&lt;li&gt;[[isArrayOfStrings]](Value)&lt;/li&gt;
+	&lt;li&gt;[[isArrayOfType]](Value, Type)&lt;/li&gt;
 	&lt;li&gt;[[isBoolean]](Value)&lt;/li&gt;
 	&lt;li&gt;[[isDate]](Value)&lt;/li&gt;
 	&lt;li&gt;[[isFunction]](Value)&lt;/li&gt;
 	&lt;li&gt;[[isGenericObject]](Value)&lt;/li&gt;
 	&lt;li&gt;[[isInteger]](Value)&lt;/li&gt;
+	&lt;li&gt;[[isMap]](Value)&lt;/li&gt;
 	&lt;li&gt;[[isNumber]](Value)&lt;/li&gt;
 	&lt;li&gt;[[isObject]](Value)&lt;/li&gt;
 	&lt;li&gt;[[isProperty]](Obj, Prop)&lt;/li&gt;
 	&lt;li&gt;[[isRegExp]](Value)&lt;/li&gt;
+	&lt;li&gt;[[isSet]](Value)&lt;/li&gt;
 	&lt;li&gt;[[isString]](Value)&lt;/li&gt;
 	&lt;li&gt;[[isUndefined]](Value)&lt;/li&gt;
+	&lt;li&gt;[[mapsAreEqual]](Map1, Map2)&lt;/li&gt;
 	&lt;li&gt;[[numberToAPString]](Value)&lt;/li&gt;
 	&lt;li&gt;[[objectsAreEqual]](Object1, Object2, [ArrayOfObjectsToIgnore])&lt;/li&gt;
+	&lt;li&gt;sanitizeString(String)&lt;/li&gt;
+	&lt;li&gt;[[setsAreEqual]](Set1, Set2)&lt;/li&gt;
+	&lt;li&gt;[[setsMatch]](Set1, Set2)&lt;/li&gt;
+	&lt;li&gt;[[spread]](Value, Funct)&lt;/li&gt;
 	&lt;li&gt;[[valuesAreEqual]](Var1, Var2)&lt;/li&gt;
 	&lt;li&gt;+ [[Engine Detection]] (12 functions)&lt;/li&gt;
   &lt;/ul&gt;&lt;/div&gt;
@@ -19290,6 +19311,77 @@ That would print {{{result}}}, because at that point both {{{$A}}} and {{{$B}}} 
 Remembering this difference between variables with primitive values vs object values can be important when you&#39;re passing an object to a function, &lt;a href=&quot;http://www.motoslave.net/sugarcube/2/docs/#macros-macro-widget&quot;&gt;widget&lt;/a&gt;, or &lt;a href=&quot;http://www.motoslave.net/sugarcube/2/docs/#macro-api&quot;&gt;macro&lt;/a&gt;, because an object passed to them can be modified by them, while a primitive value passed to them cannot be. This can be useful if you //&#39;&#39;do&#39;&#39;// want them to modify an object&#39;s values, or a potential problem to watch out for if you //&#39;&#39;don&#39;t&#39;&#39;// want them to modify an object&#39;s values.
 
 Hopefully you can see now how primitives and objects have different uses. Primitives are easier to compare and are safe to pass to functions, while objects are easier to use for collections of data and allow you to have functions which modify directly that data.
+</tw-passagedata><tw-passagedata pid="302" name="UInv Table" tags="Unfinished Excluded" position="3700,1150" size="100,100">{{{
+IMPORTANT: Table drag-drop events require the inclusion of jQuery UI.
+           See the UInv sample code which demonstrates how to do this.
+}}}
+</tw-passagedata><tw-passagedata pid="303" name="UInv Radial Menu" tags="Unfinished Excluded" position="3700,1275" size="100,100">Double-click this passage to edit it.</tw-passagedata><tw-passagedata pid="304" name="isArrayOfMaps" tags="" position="4300,650" size="100,100">&#39;&#39;isArrayOfMaps(Value)&#39;&#39; = t/f
+
+Test an array to see if all the values are maps.  Returns {{{undefined}}} if &#39;&#39;Value&#39;&#39; is not an array.
+
+</tw-passagedata><tw-passagedata pid="305" name="isSet" tags="" position="4550,25" size="100,100">&#39;&#39;isSet(Value)&#39;&#39; = t/f
+
+Returns if a value is a set.
+
+</tw-passagedata><tw-passagedata pid="306" name="isMap" tags="" position="4425,775" size="100,100">&#39;&#39;isMap(Value)&#39;&#39; = t/f
+
+Returns if a value is a map.
+
+</tw-passagedata><tw-passagedata pid="307" name="isArrayOfSets" tags="" position="4300,1025" size="100,100">&#39;&#39;isArrayOfSets(Value)&#39;&#39; = t/f
+
+Test an array to see if all the values are sets.  Returns {{{undefined}}} if &#39;&#39;Value&#39;&#39; is not an array.
+
+</tw-passagedata><tw-passagedata pid="308" name="mapsAreEqual" tags="" position="4550,400" size="100,100">&#39;&#39;mapsAreEqual(Map1, Map2)&#39;&#39; = t/f
+
+Check two maps to see if they&#39;re identical.
+
+Returns {{{false}}} if either parameter passed is not a map.
+
+</tw-passagedata><tw-passagedata pid="309" name="setsAreEqual" tags="" position="4550,900" size="100,100">&#39;&#39;setsAreEqual(Set1, Set2)&#39;&#39; = t/f
+
+Check two sets to see if they&#39;re identical, including the order.
+
+Returns {{{false}}} if either parameter passed is not a set.
+
+See also: [[setsMatch]] for unordered matches of sets
+
+</tw-passagedata><tw-passagedata pid="310" name="setsMatch" tags="" position="4550,1025" size="100,100">&#39;&#39;setsMatch(Set1, Set2)&#39;&#39;
+
+Returns if two sets contain matches for all values in any order.
+
+See also: [[setsAreEqual]] for ordered matches of sets
+
+</tw-passagedata><tw-passagedata pid="311" name="isArrayOfType" tags="" position="4300,1275" size="100,100">&#39;&#39;isArrayOfType(Value, Type)&#39;&#39; = t/f
+
+Test an array to see if all the values are of that type.  Returns {{{undefined}}} if &#39;&#39;Value&#39;&#39; is not an array or if &#39;&#39;Type&#39;&#39; is not a valid type.
+
+Valid &#39;&#39;Type&#39;&#39; values are:
+* &quot;Array&quot;
+* &quot;Boolean&quot;
+* &quot;Date&quot;
+* &quot;Generic Object&quot;
+* &quot;Integer&quot;
+* &quot;Map&quot;
+* &quot;Number&quot;
+* &quot;Object&quot;
+* &quot;Set&quot;
+* &quot;String&quot;
+
+The &#39;&#39;Type&#39;&#39; parameter should be a string and is &#39;&#39;not&#39;&#39; case sensitive (i.e. &quot;Array&quot;, &quot;array&quot;, and &quot;ARRAY&quot; are all valid &#39;&#39;Type&#39;&#39; values).
+
+</tw-passagedata><tw-passagedata pid="312" name="sanitizeString" tags="Unfinished Excluded" position="4550,775" size="100,100">Double-click this passage to edit it.</tw-passagedata><tw-passagedata pid="313" name="spread" tags="" position="4550,1150" size="100,100">&#39;&#39;spread(Value, [Value2/Funct])&#39;&#39;
+
+Returns a Map, Set, or String converted to an array.
+
+If the optional second parameter is an Array, Map, Set, or String, then the two objects are spread and returned as a single array.
+
+If a function is passed as the second parameter, this calls the function with the spread array as parameters and returns that function&#39;s value.
+
+
+</tw-passagedata><tw-passagedata pid="314" name="isArrayOfDates" tags="" position="4300,275" size="100,100">&#39;&#39;isArrayOfDates(Value)&#39;&#39; = t/f
+
+Test an array to see if all the values are dates.  Returns {{{undefined}}} if &#39;&#39;Value&#39;&#39; is not an array.
+
 </tw-passagedata></tw-storydata>
 	<script id="script-sugarcube" type="text/javascript">
 	/*! SugarCube JS */

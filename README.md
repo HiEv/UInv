@@ -31,6 +31,8 @@ Current progress (as of September 9, '19):
  - Documentation skeleton written.  Additional details and examples to be added later.
  - Item and Table "builders" mostly written (see help file), other builders to come.
 
+**Note:**  There's a bug in the v0.9.7.2 version of the **BagHasAllItems()**, **BagHasAnyItem()**, and **GetAllBagPockets()** functions, as well as failure to update UInv elements placed outside of a passage.  Use the [v0.9.7.3 bugfix code](https://github.com/HiEv/UInv/blob/master/UniversalInventorySystem.js) to avoid those problems.
+
  If you would like to support this project, you can do so via [Patreon](https://www.patreon.com/HiEv) or [PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=EA6ATKEY5463A&source=url).
 
 ### -- HiEv

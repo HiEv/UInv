@@ -150,7 +150,7 @@
 */
 
 /*
-	The next few comments blocks are to support JavaScript validators such as:
+	The next few comment blocks are to support JavaScript validators such as:
 		https://eslint.org/demo/
 		http://JSHint.com/
 		https://deepscan.io/demo/

@@ -1,6 +1,6 @@
 /*
 	Universal Inventory System (UInv)
-	by HiEv                    v0.9.7.2
+	by HiEv                    v0.9.7.3
 
 	A JavaScript inventory "plugin" for Twine 2 / SugarCube 2.
 
@@ -135,29 +135,34 @@
 		- fixed a problem the image cache had with some browsers
 		- fixed a couple of bugs in the event handler code
 			* note: this required some minor changes to the CSS generated for tables
-			* Table Builder updated to accomodate CSS changes
+			* Table Builder updated to accommodate CSS changes
 		- added another bit of sample code to the UInv_Sample_Code.html file
 		- another update to the "UInv Safe Save Code" in the UInv help file
 		- numerous help file updates and fixes
-	v0.9.7.2 - September 9, 2019 - (preview release 12)
+	v0.9.7.2 (minor update) - September 9, 2019 - (preview release 12)
 		- 4 new functions written
-		- added some missing date, map, and set support
+		- added some missing JavaScript Date, Map, and Set object support
 		- added missing documentation for new utility functions to help file
+	v0.9.7.3 (bugfix) - January 16, 2022 - (preview release 13)
+		- bugfix: the BagHasAllItems() and BagHasAnyItem() functions were only checking the first item in the array of items
+		- bugfix: fixed a problem with UInv elements in the UI bar not working properly
+		- bugfix: fixed GetAllBagPockets() incorrectly returning duplicate pocket names
 */
 
 /*
-	The next two comments block are to support JavaScript validators such as:
+	The next few comments blocks are to support JavaScript validators such as:
 		https://eslint.org/demo/
 		http://JSHint.com/
 		https://deepscan.io/demo/
 		http://beautifytools.com/javascript-validator.php
 */
 /* jshint -W014 */
+/* eslint-disable no-unused-vars */
 /*
-	global UInv, $, setup, clone, opr, safari, Config, Browser, State,
-	random, passage, window, document, navigator, alert, console, Image,
-	setTimeout, Macro, Scripting, version
+	global UInv, $, setup, clone, opr, safari, Config, Browser, State, random, passage, Macro, Scripting, version
 */
+
+/* jshint ignore:start */  /* Disable this line to test with JSHint.  It's too slow to leave enabled. */
 
 /* Increase SugarCube maxLoopIterations if needed. */
 if (Config.macros.maxLoopIterations < 2000) {
@@ -176,7 +181,7 @@ function UInvObject () {
 	if ((typeof version == "undefined") || (typeof version.title == "undefined") || (version.title != "SugarCube")
 		|| (typeof version.major == "undefined") || (version.major < 2)
 		|| (typeof version.minor == "undefined") || (version.minor < 8)) {
-		throw new Error("UInv requires SugarCube v2.8.0 or greater.  Please upgrade to the latest version of the SugarCube v2 story format");
+		throw new Error("UInv requires SugarCube v2.8.0 or greater.  Please upgrade to the latest version of the SugarCube v2 story format.");
 	}
 
 	/* deepFreeze: Freeze everything in an object's property tree. */
@@ -266,9 +271,9 @@ function UInvObject () {
 	});
 
 	/* Automatically link up UInv display elements when passage is rendered. */
-	$(document).on(":passagerender", function (ev) {
+	$(document).on(":passageend", function (ev) {
 		if (!UInv.UpdatesAreLocked()) {
-			UInv.UpdateDisplay(ev.content);
+			UInv.UpdateDisplay();
 		}
 
 		var el = $("#uinv-radial-menu").get(0);
@@ -288,7 +293,7 @@ function UInvObject () {
 		}
 
 		/* Textarea cursor fix for Chrome & Firefox. */
-		$(ev.content).find("textarea").mousemove(function (e) {
+		$("textarea").mousemove(function (e) {
 			var myPos = $(this).offset();
 			myPos.bottom = $(this).offset().top + $(this).outerHeight();
 			myPos.right = $(this).offset().left + $(this).outerWidth();
@@ -4185,9 +4190,9 @@ UInvObject.prototype = (function () {
 			}
 		},
 
-		/* GetAllBagPockets: Returns an array of all pockets' and sub-pockets's BagNames, plus BagName (unless NoSourceBag == true), or undefined on error. */
-		/*                   All BagNames returned in the array will be unique within that array. */
-		GetAllBagPockets : function (BagName, NoSourceBag) {
+		/* GetAllBagPockets: Returns an array of all pockets' and sub-pockets' BagNames, plus BagName (unless NoSourceBag == true), or undefined on error.
+							 All BagNames returned in the array will be unique within that array. */
+		GetAllBagPockets: function (BagName, NoSourceBag) {
 			var Bags = [ BagName ], Pockets, i, j;
 			if ((!UInv.isUndefined(NoSourceBag)) && (NoSourceBag == true)) {
 				Bags = [];
@@ -4199,7 +4204,7 @@ UInvObject.prototype = (function () {
 					for (i = 0; i < Items.length; i++) {
 						Pockets = UInv.GetItemPocketBagArray(BagName, Items[i]);  /* Get all pockets on each item */
 						if (Pockets.length > 0) {
-							Pockets = UInv.GetAllBagPockets(Pockets);  /* Get all pockets within those pockets */
+							Pockets = UInv.GetAllBagPockets(Pockets, true);  /* Get all pockets within those pockets */
 							for (j = 0; j < Pockets.length; j++) {
 								Bags.pushUnique(Pockets[j]);  /* Add them all to the list if they aren't already there */
 							}
@@ -4226,6 +4231,9 @@ UInvObject.prototype = (function () {
 					return undefined;
 				}
 			} else {
+				if (UInv.isArray(BagName) && (BagName.length === 0)) {
+					return [];  /* Empty array; Success */
+				}
 				UInvError('Name passed to GetAllBagPockets is not a string or an array of strings.');  /* Error */
 				return undefined;
 			}
@@ -5046,7 +5054,7 @@ UInvObject.prototype = (function () {
 		},
 
 		/* BagHasAllItems: Returns t/f based on whether the bag has all of the items in the bag, or undefined if there is an error. */
-		BagHasAllItems : function (BagName, ItemArray) {
+		BagHasAllItems: function (BagName, ItemArray) {
 			var i = 0;
 			if (UInv.isString(BagName)) {
 				if (UInv.isArrayOfStrings(ItemArray)) {
@@ -5054,7 +5062,7 @@ UInvObject.prototype = (function () {
 					if (UInv.BagExists(BagName)) {
 						UInv.SetCurrentBagName(BagName);
 						for (i = 0; i < ItemArray.length; i++) {
-							if (!UInv.BagHasItem(BagName, ItemArray[0])) {
+							if (!UInv.BagHasItem(BagName, ItemArray[i])) {
 								return false;  /* Success - could not find an item */
 							}
 						}
@@ -5064,6 +5072,9 @@ UInvObject.prototype = (function () {
 						return undefined;
 					}
 				} else {
+					if (UInv.isArray(ItemArray) && (ItemArray.length === 0)) {
+						return true;  /* Empty array; Success */
+					}
 					UInvError('ItemArray passed to BagHasAllItems is not an array of strings.');  /* Error */
 					return undefined;
 				}
@@ -5079,6 +5090,9 @@ UInvObject.prototype = (function () {
 					return undefined;
 				}
 			} else {
+				if (UInv.isArray(BagName) && (BagName.length === 0)) {
+					return true;  /* Empty array; Success */
+				}
 				UInvError('BagName passed to BagHasAllItems is not a string or array of strings.');  /* Error */
 				return undefined;
 			}
@@ -6418,7 +6432,7 @@ UInvObject.prototype = (function () {
 		},
 
 		/* BagHasAnyItem: Returns t/f based on whether the bag has any of the items in the bag, or undefined if there is an error. */
-		BagHasAnyItem : function (BagName, ItemArray) {
+		BagHasAnyItem: function (BagName, ItemArray) {
 			var i = 0;
 			if (UInv.isString(BagName)) {
 				if (UInv.isArrayOfStrings(ItemArray)) {
@@ -6426,7 +6440,7 @@ UInvObject.prototype = (function () {
 					if (UInv.BagExists(BagName)) {
 						UInv.SetCurrentBagName(BagName);
 						for (i = 0; i < ItemArray.length; i++) {
-							if (UInv.BagHasItem(BagName, ItemArray[0])) {
+							if (UInv.BagHasItem(BagName, ItemArray[i])) {
 								return true;  /* Success - found an item in the bag */
 							}
 						}
@@ -6436,21 +6450,28 @@ UInvObject.prototype = (function () {
 						return undefined;
 					}
 				} else {
+					if (UInv.isArray(ItemArray) && (ItemArray.length === 0)) {
+						return false;  /* Empty array; Success */
+					}
 					UInvError('ItemArray passed to BagHasAnyItem is not an array of strings.');  /* Error */
 					return undefined;
 				}
 			} else if (UInv.isArrayOfStrings(BagName)) {
 				if (UInv.BagExists(BagName)) {
-					var Result = true;
 					for (i = 0; i < BagName.length; i++) {
-						Result = UInv.BagHasAnyItem(BagName[i], ItemArray);
+						if (UInv.BagHasAnyItem(BagName[i], ItemArray)) {
+							return true;  /* Success - found an item in one of the bags */
+						}
 					}
-					return Result;  /* Success */
+					return false;  /* Success - no items found */
 				} else {
 					UInvError('BagHasAnyItem failed. Invalid bag name in BagName array.');  /* Error */
 					return undefined;
 				}
 			} else {
+				if (UInv.isArray(BagName) && (BagName.length === 0)) {
+					return false;  /* Empty array; Success */
+				}
 				UInvError('BagName passed to BagHasAnyItem is not a string or array of strings.');  /* Error */
 				return undefined;
 			}
@@ -11828,7 +11849,7 @@ UInvObject.prototype = (function () {
 								} else {  // Open radial menu at new location
 									$("#event").empty().wiki("Opened");  // pass this to a handler function??? check to see if radial menu should be opened, and get icons and options? ***
 									el.dataset.status = "opened";
-									var r = parseInt(el.dataset.r, 10);
+									var r = parseInt(el.dataset.r);
 									el.style.left = Math.round(ev.clientX - r + window.scrollX) + "px";
 									el.style.top = Math.round((ev.clientY - (2*r)) + r + window.scrollY) + "px";
 									el.style.transform = "scale(1, 1)";
@@ -11912,7 +11933,7 @@ UInvObject.prototype = (function () {
 
 		/* Version: Return a string showing the version of UInv. */
 		Version : function () {
-			return "Universal Inventory System (<a href='https://github.com/HiEv/UInv'>UInv</a>) v0.9.7.2 by HiEv";  /* Success */
+			return "Universal Inventory System (<a href='https://github.com/HiEv/UInv'>UInv</a>) v0.9.7.3 by HiEv";  /* Success */
 		},
 
 
@@ -11926,139 +11947,139 @@ UInvObject.prototype = (function () {
 
 		/* Add your own function aliases here.  Make sure they are not named the same as any of the existing functions. */
 
-		AddToBagValue : function (BagName, BagPropertyName, Amount) {
+		AddToBagValue: function (BagName, BagPropertyName, Amount) {
 			return UInv.AddToBagPropertyValue(BagName, BagPropertyName, Amount);
 		},
 
-		AddToItemValue : function (BagName, ItemName, ItemPropertyName, Amount) {
+		AddToItemValue: function (BagName, ItemName, ItemPropertyName, Amount) {
 			return UInv.AddToItemPropertyValue(BagName, ItemName, ItemPropertyName, Amount);
 		},
 
-		ArrayHasAllBagProperties : function (BagName, BagPropertyNameArray) {
+		ArrayHasAllBagProperties: function (BagName, BagPropertyNameArray) {
 			return UInv.BagHasAllProperties(BagName, BagPropertyNameArray);
 		},
 
-		ArrayHasAllItemProperties : function (BagName, ItemName, ItemPropertyNameArray) {
+		ArrayHasAllItemProperties: function (BagName, ItemName, ItemPropertyNameArray) {
 			return UInv.ItemHasAllProperties(BagName, ItemName, ItemPropertyNameArray);
 		},
 
-		BagArray : function () {
+		BagArray: function () {
 			return UInv.GetBagsArray();
 		},
 
-		BagCount : function () {
+		BagCount: function () {
 			return UInv.GetBagCount();
 		},
 
-		BagsExist : function (BagNameArray) {
+		BagsExist: function (BagNameArray) {
 			return UInv.BagExists(BagNameArray);
 		},
 
-		BagHasAnyBagTags : function (BagName, BagPropertyName, BagTagArray) {
+		BagHasAnyBagTags: function (BagName, BagPropertyName, BagTagArray) {
 			return UInv.BagHasAnyBagTag(BagName, BagPropertyName, BagTagArray);
 		},
 
-		BagHasAnyItemTags : function (BagName, ItemPropertyName, ItemTagArray) {
+		BagHasAnyItemTags: function (BagName, ItemPropertyName, ItemTagArray) {
 			return UInv.BagHasAnyItemTag(BagName, ItemPropertyName, ItemTagArray);
 		},
 
-		BagHasContainer : function (BagName) {
+		BagHasContainer: function (BagName) {
 			return UInv.BagIsPocket(BagName);
 		},
 
-		BagHasProperties : function (BagName, BagPropertyNameArray) {
+		BagHasProperties: function (BagName, BagPropertyNameArray) {
 			return UInv.BagHasProperty(BagName, BagPropertyNameArray);
 		},
 
-		CopyBagProperties : function (SourceBagName, DestinationBagName, BagPropertyNameArray) {
+		CopyBagProperties: function (SourceBagName, DestinationBagName, BagPropertyNameArray) {
 			return UInv.CopyBagProperty(SourceBagName, DestinationBagName, BagPropertyNameArray);
 		},
 
-		GetBagArrayWithAllProperties : function (BagPropertyNameArray) {
+		GetBagArrayWithAllProperties: function (BagPropertyNameArray) {
 			return UInv.GetBagsArrayWithAllProperties(BagPropertyNameArray);
 		},
 
-		GetBagValue : function (BagName, BagPropertyName) {
+		GetBagValue: function (BagName, BagPropertyName) {
 			return UInv.GetBagPropertyValue(BagName, BagPropertyName);
 		},
 
-		GetCellsItemName : function (BagName, Cell) {
+		GetCellsItemName: function (BagName, Cell) {
 			return UInv.GetItemWherePropertyEquals(BagName, "UInvCell", Cell);
 		},
 
-		GetHighestBagPropertyValue : function (BagPropertyName, BagNameArray) {
+		GetHighestBagPropertyValue: function (BagPropertyName, BagNameArray) {
 			return UInv.GetBagWithHighestPropertyValue(BagPropertyName, BagNameArray);
 		},
 
-		GetHighestBagValue : function (BagPropertyName, BagNameArray) {
+		GetHighestBagValue: function (BagPropertyName, BagNameArray) {
 			return UInv.GetBagWithHighestPropertyValue(BagPropertyName, BagNameArray);
 		},
 
-		GetHighestItemPropertyValue : function (BagName, ItemPropertyName) {
+		GetHighestItemPropertyValue: function (BagName, ItemPropertyName) {
 			return UInv.GetItemWithHighestPropertyValue(BagName, ItemPropertyName);
 		},
 
-		GetLowestBagPropertyValue : function (BagPropertyName, BagNameArray) {
+		GetLowestBagPropertyValue: function (BagPropertyName, BagNameArray) {
 			return UInv.GetBagWithLowestPropertyValue(BagPropertyName, BagNameArray);
 		},
 
-		GetLowestBagValue : function (BagPropertyName, BagNameArray) {
+		GetLowestBagValue: function (BagPropertyName, BagNameArray) {
 			return UInv.GetBagWithLowestPropertyValue(BagPropertyName, BagNameArray);
 		},
 
-		GetLowestItemPropertyValue : function (BagName, ItemPropertyName) {
+		GetLowestItemPropertyValue: function (BagName, ItemPropertyName) {
 			return UInv.GetItemWithLowestPropertyValue(BagName, ItemPropertyName);
 		},
 
-		GetItemQuantity : function (BagName, ItemName) {
+		GetItemQuantity: function (BagName, ItemName) {
 			return UInv.BagHasItem(BagName, ItemName);
 		},
 
-		GetItemValue : function (BagName, ItemName, ItemPropertyName) {
+		GetItemValue: function (BagName, ItemName, ItemPropertyName) {
 			return UInv.GetItemPropertyValue(BagName, ItemName, ItemPropertyName);
 		},
 
-		HasItem : function (BagName, ItemName) {
+		HasItem: function (BagName, ItemName) {
 			return UInv.BagHasItem(BagName, ItemName);
 		},
 
-		ItemHasAnyTags : function (BagName, ItemName, ItemPropertyName, ItemTagArray) {
+		ItemHasAnyTags: function (BagName, ItemName, ItemPropertyName, ItemTagArray) {
 			return UInv.ItemHasAnyTag(BagName, ItemName, ItemPropertyName, ItemTagArray);
 		},
 
-		ItemIsContainer : function (BagName, ItemName, PocketName) {
+		ItemIsContainer: function (BagName, ItemName, PocketName) {
 			return UInv.ItemHasPocket(BagName, ItemName, PocketName);
 		},
 
-		ItemQuantity : function (BagName, ItemName) {
+		ItemQuantity: function (BagName, ItemName) {
 			return UInv.BagHasItem(BagName, ItemName);
 		},
 
-		SetBagsPropertyValue : function (BagNameArray, BagPropertyName, Value) {
+		SetBagsPropertyValue: function (BagNameArray, BagPropertyName, Value) {
 			return UInv.SetBagPropertyValue(BagNameArray, BagPropertyName, Value);
 		},
 
-		SetBagsTouched : function (BagNameArray) {
+		SetBagsTouched: function (BagNameArray) {
 			return UInv.SetBagTouched(BagNameArray);
 		},
 
-		SetBagsUntouched : function (BagNameArray) {
+		SetBagsUntouched: function (BagNameArray) {
 			return UInv.SetBagUntouched(BagNameArray);
 		},
 
-		SetBagValue : function (BagName, BagPropertyName, Value) {
+		SetBagValue: function (BagName, BagPropertyName, Value) {
 			return UInv.SetBagPropertyValue(BagName, BagPropertyName, Value);
 		},
 
-		SetItemsPropertyValues : function (BagName, ItemPropertyName, Value) {
+		SetItemsPropertyValues: function (BagName, ItemPropertyName, Value) {
 			return UInv.SetItemsPropertyValue(BagName, ItemPropertyName, Value);
 		},
 
-		SetItemValue : function (BagName, ItemName, ItemPropertyName, Value) {
+		SetItemValue: function (BagName, ItemName, ItemPropertyName, Value) {
 			return UInv.SetItemPropertyValue(BagName, ItemName, ItemPropertyName, Value);
 		},
 
-		UpdateItemProperties : function (BagName, ItemName, ValuesObject) {
+		UpdateItemProperties: function (BagName, ItemName, ValuesObject) {
 			return UInv.SetItemPropertyValues(BagName, ItemName, ValuesObject);
 		},
 
@@ -12068,9 +12089,9 @@ UInvObject.prototype = (function () {
 		/* UInv Developer Data Functions: */
 		/* ============================== */
 
-		/* BagData: This is where you set the default properties and/or */
-		/*          items for the default bags. */
-		BagData : function (DefaultBagType, PropertiesOnly) {
+		/* BagData: This is where you set the default properties and/or
+					items for the default bags. */
+		BagData: function (DefaultBagType, PropertiesOnly) {
 			var BagProperties = {}, BagItems = [];
 			switch(DefaultBagType) {
 
@@ -12083,8 +12104,10 @@ UInvObject.prototype = (function () {
 			is different from properties named "Xyz" or "xyz".
 			Bag and property names cannot start with a number.
 			An bag cannot have more than one property with the same name.
-			Property values can be strings, numbers, booleans, or arrays.
-			Objects and functions are unsupported property value types.
+			Property values can be strings, numbers, booleans, arrays, maps,
+			sets, dates, undefined, null, or generic objects.
+			Other objects, such as functions, are unsupported property value
+			types.
 			Multiple successive case lines with no "break;" between them
 			will be treated as different bags with the same properties.
 			Quote marks inside strings need to have a backslash before
@@ -12095,8 +12118,8 @@ UInvObject.prototype = (function () {
 
 			case "unique-lowercase-bag-name-string":
 				BagProperties = {
-						unique-property-name1-string : property-value1,
-						unique-property-name2-string : property-value2,
+						unique-property-name1-string: property-value1,
+						unique-property-name2-string: property-value2,
 						...
 					};
 				BagItems = [
@@ -12105,13 +12128,13 @@ UInvObject.prototype = (function () {
 						"item-name-string1",
 
 						// Quantity Method = Quantity items of that type
-						{ item-name-string2 : Quantity },  // Quantity must be an integer
+						{ item-name-string2: Quantity },  // Quantity must be an integer
 
 						// Type Method = UInvQuantity items of type UInvDefaultItemType
-						{ item-name-string3 : { UInvDefaultItemType : "item-type",  UInvQuantity : Quantity } },
+						{ item-name-string3: { UInvDefaultItemType: "item-type",  UInvQuantity: Quantity } },
 
 						// Creation Method = UInvQuantity items of type UInvDefaultItemType
-						{ item-name-string4 : { UInvQuantity : Quantity,  property-name1 : value1,  ... } },
+						{ item-name-string4: { UInvQuantity: Quantity,  property-name1: value1,  ... } },
 
 						...
 					];
@@ -12160,8 +12183,8 @@ UInvObject.prototype = (function () {
 		/* Start of example bags. */
 
 				case "backpack":
-					BagProperties = { maxCarryWeight : 20 };  /* This sets the "maxCarryWeight" property of the "backpack" type bag to 20. */
-					BagItems = [ "pants", "belt", { dagger : 2 } ];  /* This adds 1 pants, 1 belt, and 2 dagger items to the backpack.  Single items do not need {} around them. */
+					BagProperties = { maxCarryWeight: 20 };  /* This sets the "maxCarryWeight" property of the "backpack" type bag to 20. */
+					BagItems = [ "pants", "belt", { dagger: 2 } ];  /* This adds 1 pants, 1 belt, and 2 dagger items to the backpack.  Single items do not need {} around them. */
 					break;  /* This ends the current "case" statement. */
 
 				case "clothing":
@@ -12170,35 +12193,35 @@ UInvObject.prototype = (function () {
 						/* This adds 1 "shoes" (of type "shoes") */
 						"shoes",
 						/* This adds 4 "pants" (of type "pants") */
-						{ "pants" : 4 },
+						{ "pants": 4 },
 						/* This adds 2 "black belt" (of type "belt") */
-						{ "black belt" : {
-							UInvDefaultItemType : "belt",
-							UInvQuantity : 2,
+						{ "black belt": {
+							UInvDefaultItemType: "belt",
+							UInvQuantity: 2,
 							/* override default belt "description" property */
-							description : "A black belt." }
+							description: "A black belt." }
 						},
 						/* This creates 3 "shirt" as described */
-						{ "shirt" : {
-							UInvQuantity : 3,
-							type : ["clothing"],
-							singular : "a shirt",
-							plural : "shirts",
-							place : ["torso2"],
-							size : 3,
-							image : "icon_cloth_shirt1.png",
-							description : "An ordinary white shirt." }
+						{ "shirt": {
+							UInvQuantity: 3,
+							type: ["clothing"],
+							singular: "a shirt",
+							plural: "shirts",
+							place: ["torso2"],
+							size: 3,
+							image: "icon_cloth_shirt1.png",
+							description: "An ordinary white shirt." }
 						}
 					];
 					break;
 
 				case "treasure bag":
 					BagProperties = {
-						UInvVariableType : true,  /* If a bag's *properties* are variable, like this one, then the UInvVariableType bag property has to be set to something (it doesn't matter what). */
-						quality : ["new", "average", "worn"].random()  /* Picks a random bag quality level. */
+						UInvVariableType: true,  /* If a bag's *properties* are variable, like this one, then the UInvVariableType bag property has to be set to something (it doesn't matter what). */
+						quality: ["new", "average", "worn"].random()  /* Picks a random bag quality level. */
 					};
 					BagItems = [
-						{ "gold coin" : random(2, 20) },  /* Each bag randomly has 2 to 20 coins and a random item from the treasures bag item list. */
+						{ "gold coin": random(2, 20) },  /* Each bag randomly has 2 to 20 coins and a random item from the treasures bag item list. */
 						UInv.BagData("treasures").random()  /* Adds 1 random treasure from the "treasures" type bag below in the next case statement. */
 					];
 					break;
@@ -12208,7 +12231,7 @@ UInvObject.prototype = (function () {
 					break;
 
 				case "suit pocket":  /* This bag is for an infinite loop test, since it will have a suit in each suit pocket.  Normally you should avoid such loops. */
-					BagProperties = { maxCarryWeight : 5 };
+					BagProperties = { maxCarryWeight: 5 };
 					BagItems = [ "suit" ];
 					break;
 
@@ -12227,18 +12250,18 @@ UInvObject.prototype = (function () {
 		},
 
 
-		/* ItemData: This is where you set the default properties for the */
-		/*           default items. */
-		ItemData : (function () {
+		/* ItemData: This is where you set the default properties for the
+					 default items. */
+		ItemData: (function () {
 			var Items = {};
 
-		/*  IMPORTANT!:       --Static Items Information--
+		/*  IMPORTANT!:	   --Static Items Information--
 			Items with consistent default property values are "static items".
 			Items with property values that may vary are "variable items".
 			Item names must be unique strings in all lowercase.
 			Item names cannot be "uinvtouched", "uinvproperties",
 			"uinvdefaultbagtype", "uinvcontainer", "-" (the minus sign),
-			or "" (an empty string), they're reserved for use by UInv.
+			or "" (an empty string); they're reserved for use by UInv.
 			Property names can be upper and/or lowercase strings.
 			Property names with spaces in them must be inside quotes.
 			Property names are case sensitive, so a property named "XYZ"
@@ -12247,16 +12270,18 @@ UInvObject.prototype = (function () {
 			An item cannot have more than one property with the same name.
 			An item cannot have a property named "UInvQuantity" or
 			"UInvDefaultItemType", they're reserved for use by UInv.
-			Property values can be strings, numbers, booleans, or arrays.
-			Objects and functions are unsupported property value types.
+			Property values can be strings, numbers, booleans, arrays, maps,
+			sets, dates, undefined, null, or generic objects.
+			Other objects, such as functions, are unsupported property value
+			types.
 			Quote marks inside strings need to have a backslash before
 			them.  (e.g. "Bob said, \"Hello.\"")
 			Backslashes will also need a backslash before them.
 
 			Static items should be added in the following format:
 
-			Items.itemname = { property-name-string1 : property-value1,
-							property-name-string2 : property-value2,
+			Items.itemname = { property-name-string1: property-value1,
+							property-name-string2: property-value2,
 							etc...
 							};
 
@@ -12264,8 +12289,8 @@ UInvObject.prototype = (function () {
 			cannot start with a number.  If it contains a space then it needs
 			to be in this format:
 
-			Items['item name'] = { property-name-string1 : property-value1,
-								property-name-string2 : property-value2,
+			Items['item name'] = { property-name-string1: property-value1,
+								property-name-string2: property-value2,
 								etc...
 								};
 
@@ -12283,30 +12308,30 @@ UInvObject.prototype = (function () {
 		/* Start of example static items. */
 
 			Items.backpack = {
-				type : ["wearable", "container"],
-				UInvPocket : { inside: "backpack", "front pocket": "-" },  /* pockets: "inside" and "front pocket" */
-				singular : "a backpack",
-				plural : "backpacks",
-				size : 7,
-				image : "backpack.png",
-				description : "A leather satchel with a pocket on the front and sturdy straps so you can wear it on your back."
+				type: ["wearable", "container"],
+				UInvPocket: { inside: "backpack", "front pocket": "-" },  /* pockets: "inside" and "front pocket" */
+				singular: "a backpack",
+				plural: "backpacks",
+				size: 7,
+				image: "backpack.png",
+				description: "A leather satchel with a pocket on the front and sturdy straps so you can wear it on your back."
 			};
 
-			Items.belt = { type : ["clothing"], singular : "a belt", plural : "belts", place : ["hips1"], size : 2, image : "icon_belt1.png", description : "A basic leather belt." };
+			Items.belt = { type: ["clothing"], singular: "a belt", plural: "belts", place: ["hips1"], size: 2, image: "icon_belt1.png", description: "A basic leather belt." };
 
-			Items.dagger = { type : ["weapon", "stabbing", "1-handed"], singular : "a dagger", plural : "daggers", size : 2, image : "icon_dagger3.png", description : "A small dagger." };
+			Items.dagger = { type: ["weapon", "stabbing", "1-handed"], singular: "a dagger", plural: "daggers", size: 2, image: "icon_dagger3.png", description: "A small dagger." };
 
-			Items["gold coin"] = { type : ["money"], singular : "a gold coin", plural : "gold coins", size : 0, image : "coin.png", description : "Gold coins are the standard currency." };
+			Items["gold coin"] = { type: ["money"], singular: "a gold coin", plural: "gold coins", size: 0, image: "coin.png", description: "Gold coins are the standard currency." };
 
-			Items["heavy mace"] = { type : ["weapon", "blunt", "2-handed"], singular : "a heavy mace", plural : "heavy maces", size : 6, image : "Heavy_Mace.png", description : "A heavy mace with pointy flanges on it." };
+			Items["heavy mace"] = { type: ["weapon", "blunt", "2-handed"], singular: "a heavy mace", plural: "heavy maces", size: 6, image: "Heavy_Mace.png", description: "A heavy mace with pointy flanges on it." };
 
-			Items.pants = { type : ["clothing"], singular : "a pair of pants", plural : "pairs of pants", place : ["hips2"], size : 4, image : "icon_cloth_pants1.png", description : "A pair of pants." };
+			Items.pants = { type: ["clothing"], singular: "a pair of pants", plural: "pairs of pants", place: ["hips2"], size: 4, image: "icon_cloth_pants1.png", description: "A pair of pants." };
 
-			Items.shoes = { type : ["clothing"], singular : "a pair of shoes", plural : "pairs of shoes", place : ["feet1"], size : 2, image : "icon_LEATHER_boots1.png", description : "A pair of shoes." };
+			Items.shoes = { type: ["clothing"], singular: "a pair of shoes", plural: "pairs of shoes", place: ["feet1"], size: 2, image: "icon_LEATHER_boots1.png", description: "A pair of shoes." };
 
-			Items.shortsword = { type : ["weapon", "slashing", "1-handed"], singular : "a short sword", plural : "short swords", size : 4, image : "icon_sword_short1.png", description : "A shortsword." };
+			Items.shortsword = { type: ["weapon", "slashing", "1-handed"], singular: "a short sword", plural: "short swords", size: 4, image: "icon_sword_short1.png", description: "A shortsword." };
 
-			Items.suit = { type : ["clothing", "container"], UInvPocket : { pocket: "suit pocket" }, singular : "a suit jacket", plural : "suit jackets", place : ["torso1"], size : 5, image : "icon_chain_breast.png", description : "A classic black suit jacket with a pocket." };  /* This item is for an infinite loop test, since it will have a suit in each suit pocket.  Normally you should avoid such loops. */
+			Items.suit = { type: ["clothing", "container"], UInvPocket: { pocket: "suit pocket" }, singular: "a suit jacket", plural: "suit jackets", place: ["torso1"], size: 5, image: "icon_chain_breast.png", description: "A classic black suit jacket with a pocket." };  /* This item is for an infinite loop test, since it will have a suit in each suit pocket.  Normally you should avoid such loops. */
 
 		/* End of example static items. */
 
@@ -12320,7 +12345,7 @@ UInvObject.prototype = (function () {
 				var Item = undefined;  /* jshint ignore:line */
 				switch(DefaultItemType) {
 
-			/*  IMPORTANT!:       --Variable Items Information--
+			/*  IMPORTANT!:	   --Variable Items Information--
 				Items with consistent default property values are "static items".
 				Items with property values that may vary are "variable items".
 				Item names, property names, and property values for variable
@@ -12334,8 +12359,8 @@ UInvObject.prototype = (function () {
 
 				case "itemname":
 					// Other code may go here.
-					Item = { property-name-string1 : property-value1,
-							property-name-string2 : property-value2,
+					Item = { property-name-string1: property-value1,
+							property-name-string2: property-value2,
 							... };
 					break;  // This ends the current "case" statement.
 
@@ -12346,20 +12371,27 @@ UInvObject.prototype = (function () {
 			/* Start of example variable items. */
 
 					case "bow":  /* Gives you a bow with 10 to 20 arrows. */
-						Item = { arrows: random(10, 20), type : ["weapon", "ranged", "piercing", "2-handed"], singular : "a bow", plural : "bows", size : 5, image : "bow.png", description : "A bow." };
+						Item = {
+							arrows: random(10, 20),
+							type: ["weapon", "ranged", "piercing", "2-handed"],
+							singular: "a bow",
+							plural: "bows",
+							size: 5,
+							image: "bow.png",
+							description: "A bow." };
 						break;  /* This ends the current "case" statement. */
 
 					case "rainbow potion":  /* This produces a potion item of a random color. */
 						var color = ["red", "orange", "yellow", "green", "blue", "purple"].random();  /* Randomly picks a color. */
 						var article = color === "orange" ? "an " : "a ";  /* Sets the "article" variable to "a ", unless the color equals "orange", in that case it sets it to "an ". */
 						Item = {
-							UInvVariableType : color,  /* Because this item's property values can vary, the "UInvVariableType" property has to be set to something. */
-							type : ["potion"],
-							singular : article + color + " potion",
-							plural : color + " potions",
-							size : 1,
-							image : "potion" + color.toUpperFirst() + ".png",
-							description : article.toUpperFirst() + color + " potion."
+							UInvVariableType: color,  /* Because this item's property values can vary, the "UInvVariableType" property has to be set to something. */
+							type: ["potion"],
+							singular: article + color + " potion",
+							plural: color + " potions",
+							size: 1,
+							image: "potion" + color.toUpperFirst() + ".png",
+							description: article.toUpperFirst() + color + " potion."
 						};
 						break;  /* This ends the current "case" statement. */
 
@@ -12384,11 +12416,11 @@ UInvObject.prototype = (function () {
 		})(),
 
 /* OPTIONAL: You can list the names of your default bags here so
-             you can find them by searching "UInv.BagList[index]". */
+			 you can find them by searching "UInv.BagList[index]". */
 		BagList: ["backpack", "clothes", "treasure bag", "treasures", "suit pocket"],
 
 /* OPTIONAL: You can list the names of your default items here so
-             you can find them by searching "UInv.ItemList[index]". */
+			 you can find them by searching "UInv.ItemList[index]". */
 		ItemList: ["backpack", "belt", "bow", "dagger", "gold coin", "heavy mace", "pants", "rainbow potion", "shoes", "shortsword", "suit"]
 	};
 })();

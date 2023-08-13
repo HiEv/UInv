@@ -7012,7 +7012,7 @@ UInvObject.prototype = (function () {
 				if (UInv.BagExists(BagName)) {
 					var Items = UInv.GetItemsArrayByProperty(BagName, ItemPropertyName), i = 0, Value = 0, Result = 0;
 					if (Items.length > 0) {
-						for (i = 1; i < Items.length; i++) {
+						for (i = 0; i < Items.length; i++) {
 							if (UInv.ItemHasProperty(BagName, Items[i], ItemPropertyName)) {
 								Value = UInv.GetItemPropertyValue(BagName, Items[i], ItemPropertyName);
 								if (UInv.isNumber(Value)) {

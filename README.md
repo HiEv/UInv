@@ -16,11 +16,11 @@ Then there is the **display** layer, which will make it easy for you to add inve
 
 For more information, you can take a look at an early version of the UInv help file at the link below:
 
-http://bit.ly/UInvHelp  (work in progress)
+https://hiev-heavy-ind.com/UInv/UInv_Help_File.html  (work in progress)
 
 and some simple introductory UInv sample code can be found at the following link:
 
-http://bit.ly/UInvSampleCode  (work in progress)
+https://hiev-heavy-ind.com/UInv/UInv_Sample_Code.html  (work in progress)
 
 Those are also included in [the .ZIP file available here](https://github.com/HiEv/UInv/releases).  You can import those into Twine 2 to see how they work.
 
